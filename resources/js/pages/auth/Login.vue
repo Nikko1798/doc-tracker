@@ -8,13 +8,20 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { store } from '@/routes/login';
-import { Form, Head } from '@inertiajs/vue3';
+import password, { email } from '@/routes/password';
+import { Form, Head, useForm } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import { LoaderCircle } from 'lucide-vue-next';
 defineProps<{
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
 }>();
+
+const form=useForm({
+    email: '',
+    password: '',
+});
 </script>
 
 <template>
@@ -32,7 +39,8 @@ defineProps<{
         </div>
 
         <Form
-            v-bind="store.form()"
+            :action="route('login.store')"
+            method="POST"
             :reset-on-success="['password']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
@@ -42,6 +50,7 @@ defineProps<{
                     <Label for="email">Email address</Label>
                     <Input
                         id="email"
+                        v-model="form.email"
                         type="email"
                         name="email"
                         required
@@ -67,6 +76,7 @@ defineProps<{
                     </div>
                     <Input
                         id="password"
+                        v-model="form.password"
                         type="password"
                         name="password"
                         required
@@ -91,7 +101,7 @@ defineProps<{
                     :disabled="processing"
                     data-test="login-button"
                 >
-                    <Spinner v-if="processing" />
+                    <LoaderCircle v-if="processing" />
                     Log in
                 </Button>
             </div>

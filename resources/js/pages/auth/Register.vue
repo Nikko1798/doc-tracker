@@ -7,8 +7,17 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
+import password, { email } from '@/routes/password';
 import { store } from '@/routes/register';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, useForm } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
+import { LoaderCircle } from 'lucide-vue-next';
+const form=useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation:''
+})
 </script>
 
 <template>
@@ -19,7 +28,8 @@ import { Form, Head } from '@inertiajs/vue3';
         <Head title="Register" />
 
         <Form
-            v-bind="store.form()"
+            :action="route('register.store')"
+            method="POST"
             :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
@@ -29,6 +39,7 @@ import { Form, Head } from '@inertiajs/vue3';
                     <Label for="name">Name</Label>
                     <Input
                         id="name"
+                        v-model="form.name"
                         type="text"
                         required
                         autofocus
@@ -37,13 +48,14 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="name"
                         placeholder="Full name"
                     />
-                    <InputError :message="errors.name" />
+                    <InputError :message="form.errors.name" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="email">Email address</Label>
                     <Input
                         id="email"
+                        v-model="form.email"
                         type="email"
                         required
                         :tabindex="2"
@@ -51,13 +63,14 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="email"
                         placeholder="email@example.com"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="password">Password</Label>
                     <Input
                         id="password"
+                        v-model="form.password"
                         type="password"
                         required
                         :tabindex="3"
@@ -65,7 +78,7 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="password"
                         placeholder="Password"
                     />
-                    <InputError :message="errors.password" />
+                    <InputError :message="form.errors.password" />
                 </div>
 
                 <div class="grid gap-2">
@@ -73,13 +86,14 @@ import { Form, Head } from '@inertiajs/vue3';
                     <Input
                         id="password_confirmation"
                         type="password"
+                        v-model="form.password_confirmation"
                         required
                         :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
                         placeholder="Confirm password"
                     />
-                    <InputError :message="errors.password_confirmation" />
+                    <InputError :message="form.errors.password_confirmation" />
                 </div>
 
                 <Button
@@ -89,7 +103,7 @@ import { Form, Head } from '@inertiajs/vue3';
                     :disabled="processing"
                     data-test="register-user-button"
                 >
-                    <Spinner v-if="processing" />
+                    <LoaderCircle v-if="processing" />
                     Create account
                 </Button>
             </div>
@@ -97,7 +111,7 @@ import { Form, Head } from '@inertiajs/vue3';
             <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
                 <TextLink
-                    :href="login()"
+                    :href="route('login')"
                     class="underline underline-offset-4"
                     :tabindex="6"
                     >Log in</TextLink

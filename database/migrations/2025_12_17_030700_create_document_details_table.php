@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contract_moa_documents', function (Blueprint $table) {
+        Schema::create('document_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('document_id')->constrained();
+            $table->foreignId('ncca_end_user_id')->nullable()->constrained('employees');
+            $table->foreignId('office_concerned_id')->nullable()->constrained('offices');
             $table->text('other_details')->nullable();
             $table->string('project_or_program')->nullable();
             $table->string('authority_or_fund_source')->nullable();
-            $table->foreignId('ncca_end_user_id')->nullable()->constrained('employees');
             $table->dateTime('date_time_ready')->nullable();
             $table->dateTime('date_time_released')->nullable();
             $table->text('remarks')->nullable();
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contract_moa_documents');
+        Schema::dropIfExists('document_details');
     }
 };
