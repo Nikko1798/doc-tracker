@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class Document extends Model
 {
@@ -10,13 +13,13 @@ class Document extends Model
     protected $guarded=[];
     public function document_detail(): HasOne
     {
-        $this->hasOne(DocumentDetail::class);
+        return $this->hasOne(DocumentDetail::class);
     }
 
     public function complexity(): BelongsTo{
-        $this->belongsTo(Codetable::class, 'complexity_id');
+        return $this->belongsTo(Codetable::class, 'complexity_id');
     }
     public function document_type(): BelongsTo{
-        $this->belongsTo(DocumentType::class, 'document_type_id');
+        return $this->belongsTo(DocumentType::class, 'document_type_id');
     }
 }

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DateValue } from '@internationalized/date'
 import { DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
-import { CalendarIcon } from 'lucide-vue-next'
+import { CalendarIcon, CheckCheck } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -32,10 +32,17 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-vue-next'
 import InputError from '@/components/InputError.vue'
 import { route } from 'ziggy-js'
 import axios from 'axios'
+
+import { usePage } from '@inertiajs/vue3'
 const props=defineProps({
     documentTypes:{
         type: Array as PropType<Record<string, any>[]>,
@@ -44,8 +51,18 @@ const props=defineProps({
     complexities:{
         type: Array as PropType<Record<string, any>[]>,
         default: ()=>[]
+    },
+    offices:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    employees:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
     }
 });
+const page = usePage() as any
+const successMessage = computed(() => page.props.flash.success)
 
 const defaultPlaceholder = today(getLocalTimeZone())
 const dateReceived = ref() as Ref<DateValue>
@@ -95,60 +112,25 @@ watch(dateReleased, (newVal, oldVal) => {
     : null
 })
 
-const nccaEmployees = [
-  {
-    value: 'next.js',
-    label: 'Next.js',
-  },
-  {
-    value: 'sveltekit',
-    label: 'SvelteKit',
-  },
-  {
-    value: 'nuxt.js',
-    label: 'Nuxt.js',
-  },
-  {
-    value: 'remix',
-    label: 'Remix',
-  },
-  {
-    value: 'astro',
-    label: 'Astro',
-  },
-]
-const offices = [
-  {
-    value: '1',
-    label: 'MISS',
-  },
-  {
-    value: '2',
-    label: 'OED',
-  },
-  {
-    value: '3',
-    label: 'MET',
-  },
-  
-]
+
 const officeOpen = ref(false)
 const empOpen = ref(false)
 
 const selectedEmployee = computed(() =>
-  nccaEmployees.find(emp => emp.value === form.ncca_end_user),
+    props.employees.find(emp => emp.id === form.ncca_end_user),
 )
 function selecEmployee(selectedValue: string) {
-  form.ncca_end_user = selectedValue === form.ncca_end_user ? '' : selectedValue
-  empOpen.value = false
+    form.ncca_end_user = selectedValue === form.ncca_end_user ? '' : selectedValue
+    empOpen.value = false
 }
 
 const selectedOffice = computed(() =>
-  offices.find(office => office.value === form.office_concerned),
+    props.offices.find(office => office.id === form.office_concerned),
 )
 function selectOffice(selectedValue: string) {
-  form.office_concerned = selectedValue === form.office_concerned ? '' : selectedValue
-  officeOpen.value = false
+
+    form.office_concerned = selectedValue === form.office_concerned ? '' : selectedValue
+    officeOpen.value = false
 }
 
 // const submit=(()=>{
@@ -164,12 +146,24 @@ function selectOffice(selectedValue: string) {
 //     });
 // })
 const submit = () => {
-  form.post(route('document.store'))
+  form.post(route('document.store'),{
+    onSuccess: ()=>{
+        form.reset();
+    }
+  })
+    
 }
 </script>
 
 <template>
-    <button @click="submit">sub</button>
+    <!-- <button @click="submit">sub</button> -->
+     
+    <div class="grid p-5">
+        <Alert v-if="successMessage" class="bg-green-800">
+            <CheckCheck></CheckCheck>
+            <AlertTitle>{{ successMessage }}</AlertTitle>
+        </Alert>
+    </div>
     <Form class="p-5 space-y-5" @submit.prevent="submit"
     v-slot="{ errors, processing }">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -286,7 +280,7 @@ const submit = () => {
                             :aria-expanded="empOpen"
                             class="w-full justify-between"
                         >
-                            {{ selectedEmployee?.label || "Employee..." }}
+                            {{ selectedEmployee?.name || "Employee..." }}
                             <ChevronsUpDownIcon class="opacity-50" />
                         </Button>
                         </PopoverTrigger>
@@ -297,18 +291,18 @@ const submit = () => {
                             <CommandEmpty>No employee found.</CommandEmpty>
                             <CommandGroup>
                                 <CommandItem
-                                v-for="emp in nccaEmployees"
-                                :key="emp.value"
-                                :value="emp.value"
+                                v-for="emp in props.employees"
+                                :key="emp.id"
+                                :value="emp.id"
                                 @select="(ev) => {
                                     selecEmployee(ev.detail.value as string)
                                 }"
                                 >
-                                {{ emp.label }}
+                                {{ emp.name }}
                                 <CheckIcon
                                     :class="cn(
                                     'ml-auto',
-                                    form.ncca_end_user === emp.value ? 'opacity-100' : 'opacity-0',
+                                    form.ncca_end_user === emp.id ? 'opacity-100' : 'opacity-0',
                                     )"
                                 />
                                 </CommandItem>
@@ -336,7 +330,7 @@ const submit = () => {
                             :aria-expanded="officeOpen"
                             class="w-full justify-between"
                         >
-                            {{ selectedOffice?.label || "Employee..." }}
+                            {{ selectedOffice?.name || "Employee..." }}
                             <ChevronsUpDownIcon class="opacity-50" />
                         </Button>
                         </PopoverTrigger>
@@ -347,18 +341,18 @@ const submit = () => {
                             <CommandEmpty>No office found.</CommandEmpty>
                             <CommandGroup>
                                 <CommandItem
-                                v-for="office in offices"
-                                :key="office.value"
-                                :value="office.value"
+                                v-for="office in props.offices"
+                                :key="office.id"
+                                :value="office.id"
                                 @select="(ev) => {
                                     selectOffice(ev.detail.value as string)
                                 }"
                                 >
-                                {{ office.label }}
+                                {{ office.name }}
                                 <CheckIcon
                                     :class="cn(
                                     'ml-auto',
-                                    form.ncca_end_user === office.value ? 'opacity-100' : 'opacity-0',
+                                    form.office_concerned === office.id ? 'opacity-100' : 'opacity-0',
                                     )"
                                 />
                                 </CommandItem>

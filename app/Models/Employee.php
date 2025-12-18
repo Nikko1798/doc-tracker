@@ -9,6 +9,6 @@ class Employee extends Model
 {
     //
        public function document_details(): HasMany{
-        $this->belongsTo(Employee::class, 'ncca_end_user_id');
+        return $this->belongsTo(Employee::class, 'ncca_end_user_id');
     }
 }

@@ -10,6 +10,12 @@ class DocumentService
     }
     public function store($request)
     {
-        return $this->documentRepository->store($request);
+        try{
+            $document=$this->documentRepository->store($request);
+            return redirect()->back()->with('success', 'Saved successfully');
+        }
+        catch(Exception $e){
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }
