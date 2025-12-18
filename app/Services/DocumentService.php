@@ -18,4 +18,9 @@ class DocumentService
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+    public function fetchPublicDocuments($request)
+    {
+        $document=$this->documentRepository->fetchPublicDocuments($request);
+        return $document;
+    }
 }

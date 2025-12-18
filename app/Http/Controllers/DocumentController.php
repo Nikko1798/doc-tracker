@@ -37,4 +37,8 @@ class DocumentController extends Controller
     public function store(Request $request){
        return $this->documentService->store($request);
     } 
+    public function fetchPublicDocuments(Request $request)
+    {
+        return $this->documentService->fetchPublicDocuments($request);
+    }
 }
