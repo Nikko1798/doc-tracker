@@ -37,6 +37,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert'
+import Badge from '@/components/ui/badge/Badge.vue'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-vue-next'
 import InputError from '@/components/InputError.vue'
 import { route } from 'ziggy-js'
@@ -75,9 +76,10 @@ const df = new DateFormatter('en-US', {
 
 const form = useForm<{ date_received: string | null, 
     document_type: number | null, title: string | '', control_number: string | '',
-    complexity: number | null, other_details: string | '', authority_or_fund_source: string | '',
+    complexity: number | null, other_details: string | '', person_claiming_or_remarks: string | '',authority_or_fund_source: string | '',
     ncca_end_user: string | '', office_concerned: string | '', date_ready: string |null, date_released: string | null,
-    service_to_ncca: string|'', concerned_party_or_supplier: string | '', total_service_amount: number | 0.00 }>({
+    service_to_ncca: string|'', concerned_party_or_supplier: string | '', total_service_amount: number | 0.00,
+    NewEmployeeName: string|'', NewOfficeName: string|'' }>({
 
     date_received:  null,
     document_type: null,
@@ -85,6 +87,7 @@ const form = useForm<{ date_received: string | null,
     control_number: '',
     complexity: null,
     other_details: '',
+    person_claiming_or_remarks: '',
     authority_or_fund_source: '',
     ncca_end_user: '',
     office_concerned: '',
@@ -93,6 +96,9 @@ const form = useForm<{ date_received: string | null,
     service_to_ncca: '',
     concerned_party_or_supplier: '',
     total_service_amount: 0.00,
+
+    NewEmployeeName: '',
+    NewOfficeName: '',
 
 })
 
@@ -259,6 +265,14 @@ const submit = () => {
                 <InputError :message="form.errors.other_details"></InputError>
             </div>
         </div>
+        <div class="grid grid-cols-1  gap-2">
+            <div class="space-y-2">
+                <Label>Other details</Label>
+                <Textarea v-model="form.person_claiming_or_remarks" id="person_claiming_or_remarks" 
+                name="person_claiming_or_remarks" rows="2" placeholder="enter remarks here...."></Textarea>
+                <InputError :message="form.errors.person_claiming_or_remarks"></InputError>
+            </div>
+        </div>
 
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -286,11 +300,16 @@ const submit = () => {
                         </PopoverTrigger>
                         <PopoverContent class="w-full p-0">
                         <Command>
-                            <CommandInput class="h-9" placeholder="Search employee..." />
+                            <CommandInput class="h-9 border border-gray-300 rounded-lg p-4 " placeholder="Search employee..." v-model="form.NewEmployeeName" />
                             <CommandList>
-                            <CommandEmpty>No employee found.</CommandEmpty>
-                            <CommandGroup>
+                            <CommandEmpty class=" pr-2 pl-2">
+                                <Badge class="bg-blue-500 w-full hover:cursor-pointer hover:bg-blue-800">
+                                    Add this to the list
+                                </Badge>
+                            </CommandEmpty>
+                            <CommandGroup class="bg-gray-300">
                                 <CommandItem
+                                class="hover:cursor-pointer hover:bg-gray-200"
                                 v-for="emp in props.employees"
                                 :key="emp.id"
                                 :value="emp.id"
@@ -330,7 +349,7 @@ const submit = () => {
                             :aria-expanded="officeOpen"
                             class="w-full justify-between"
                         >
-                            {{ selectedOffice?.name || "Employee..." }}
+                            {{ selectedOffice?.name || "Office..." }}
                             <ChevronsUpDownIcon class="opacity-50" />
                         </Button>
                         </PopoverTrigger>

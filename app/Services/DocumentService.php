@@ -23,4 +23,8 @@ class DocumentService
         $document=$this->documentRepository->fetchPublicDocuments($request);
         return $document;
     }
+    public function fetchAllDocuments($request){
+        $document=$this->documentRepository->fetchAllDocuments($request);
+        return $document;
+    }
 }

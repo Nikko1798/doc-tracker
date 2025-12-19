@@ -25,6 +25,7 @@ class DocumentRepository
             'ncca_end_user_id'=> $request['ncca_end_user'],
             'office_concerned_id'=> $request['office_concerned'],
             'other_details'=> $request['other_details'],
+            'remarks'=> $request['person_claiming_or_remarks'],
             'authority_or_fund_source'=> $request['authority_or_fund_source'],
             'date_time_ready'=> $request['date_ready'],
             'date_time_released'=> $request['date_released'],
@@ -34,6 +35,37 @@ class DocumentRepository
         ]);
     }
     public function fetchPublicDocuments($request){
+        $perPage = $request->input('perPage', 10); // Default to 10 per page
+        $page = $request->input('page', 1); // Default page 1
+        $doc= Document::select('documents.id',
+                'documents.date_received',
+                'documents.title',
+                'documents.control_number',
+                'document_details.document_id',
+                'document_details.ncca_end_user_id',
+                'document_details.office_concerned_id',
+                'document_details.other_details',
+                'document_details.project_or_program',
+                'document_details.authority_or_fund_source',
+                'document_details.date_time_ready',
+                'document_details.date_time_released',
+                'document_details.remarks', 'employees.name as ncca_end_user' , 'offices.name as office_concerned','codetables.codename as complexity', 'document_types.name as document_type')
+            ->leftJoin('document_details', 'document_details.document_id', 'documents.id')
+            ->leftJoin('employees', 'employees.id', 'document_details.ncca_end_user_id')
+            ->leftJoin('offices', 'offices.id', 'document_details.office_concerned_id')
+            ->leftJoin('document_types', 'document_types.id', 'documents.document_type_id')
+            ->leftJoin('codetables', 'codetables.id', 'documents.complexity_id')
+            ->where(function ($query) use ($request){
+                $query->where('documents.title', 'like', '%' . $request->name . '%');
+            });
+    
+            if(isset($request->sortBy))
+            {
+                $doc->orderBy($request->sortBy, $request->sortOrder);
+            }
+            return  $doc->paginate($perPage, ['*'], 'page', $page);
+    }
+    public function fetchAllDocuments($request){
         $perPage = $request->input('perPage', 10); // Default to 10 per page
         $page = $request->input('page', 1); // Default page 1
         $doc= Document::select('documents.id',

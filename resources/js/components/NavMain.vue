@@ -9,9 +9,11 @@ import {
 import { urlIsActive } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { PropType } from 'vue';
+import { route } from 'ziggy-js';
 
 defineProps<{
-    items: NavItem[];
+    items:Record<string, any>[]
 }>();
 
 const page = usePage();
@@ -27,7 +29,7 @@ const page = usePage();
                     :is-active="urlIsActive(item.href, page.url)"
                     :tooltip="item.title"
                 >
-                    <Link :href="item.href">
+                    <Link :href="route(item.href)">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
                     </Link>

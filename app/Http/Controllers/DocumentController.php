@@ -41,4 +41,8 @@ class DocumentController extends Controller
     {
         return $this->documentService->fetchPublicDocuments($request);
     }
+    public function fetchAllDocuments(Request $request)
+    {
+        return $this->documentService->fetchAllDocuments($request);
+    }
 }

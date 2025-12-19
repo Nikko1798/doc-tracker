@@ -7,6 +7,8 @@ Route::prefix('document')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/', [DocumentController::class, 'index'])->name('document.index');
         Route::post('/store', [DocumentController::class, 'store'])->name('document.store');
+        Route::get('/fetch-all-documents', [DocumentController::class, 'fetchAllDocuments'])->name('document.fetch-all-documents');
+        
     });
     Route::middleware('guest')->group(function () {
         Route::get('/fetchPublicDocuments', [DocumentController::class, 'fetchPublicDocuments'])->name('document.fetch-public-documents');
