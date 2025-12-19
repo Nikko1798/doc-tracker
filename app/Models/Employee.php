@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Employee extends Model
 {
     //
-       public function document_details(): HasMany{
-        return $this->belongsTo(Employee::class, 'ncca_end_user_id');
+    protected $guarded=[];
+    public function document_details(): HasMany{
+        return $this->hasMany(DocumentDetail::class, 'ncca_end_user_id');
     }
 }

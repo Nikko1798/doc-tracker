@@ -73,11 +73,13 @@ const df = new DateFormatter('en-US', {
   dateStyle: 'long',
 })
 
+const NewEmployee=ref('');
+const NewOfficeName=ref('');
 
 const form = useForm<{ date_received: string | null, 
     document_type: number | null, title: string | '', control_number: string | '',
     complexity: number | null, other_details: string | '', person_claiming_or_remarks: string | '',authority_or_fund_source: string | '',
-    ncca_end_user: string | '', office_concerned: string | '', date_ready: string |null, date_released: string | null,
+    ncca_end_user: string | null, office_concerned: string | null, date_ready: string |null, date_released: string | null,
     service_to_ncca: string|'', concerned_party_or_supplier: string | '', total_service_amount: number | 0.00,
     NewEmployeeName: string|'', NewOfficeName: string|'' }>({
 
@@ -89,8 +91,8 @@ const form = useForm<{ date_received: string | null,
     other_details: '',
     person_claiming_or_remarks: '',
     authority_or_fund_source: '',
-    ncca_end_user: '',
-    office_concerned: '',
+    ncca_end_user: null,
+    office_concerned: null,
     date_ready: null,
     date_released: null,
     service_to_ncca: '',
@@ -123,19 +125,28 @@ const officeOpen = ref(false)
 const empOpen = ref(false)
 
 const selectedEmployee = computed(() =>
-    props.employees.find(emp => emp.id === form.ncca_end_user),
+    props.employees.find(emp => emp.id === form.ncca_end_user)
 )
 function selecEmployee(selectedValue: string) {
     form.ncca_end_user = selectedValue === form.ncca_end_user ? '' : selectedValue
     empOpen.value = false
 }
-
+function selectNewEmployee(){
+    form.ncca_end_user=null
+    form.NewEmployeeName=NewEmployee.value
+    empOpen.value = false
+}
 const selectedOffice = computed(() =>
     props.offices.find(office => office.id === form.office_concerned),
 )
 function selectOffice(selectedValue: string) {
 
     form.office_concerned = selectedValue === form.office_concerned ? '' : selectedValue
+    officeOpen.value = false
+}
+function selectNewOffice(){
+    form.office_concerned=null
+    form.NewOfficeName=NewOfficeName.value
     officeOpen.value = false
 }
 
@@ -159,15 +170,17 @@ const submit = () => {
   })
     
 }
+function test(){
+    console.log(toRaw(form.data()))
+}
 </script>
 
 <template>
-    <!-- <button @click="submit">sub</button> -->
      
     <div class="grid p-5">
-        <Alert v-if="successMessage" class="bg-green-800">
-            <CheckCheck></CheckCheck>
-            <AlertTitle>{{ successMessage }}</AlertTitle>
+        <Alert v-if="successMessage" class="bg-green-800 text-white">
+            <CheckCheck ></CheckCheck>
+            <AlertTitle >{{ successMessage }}</AlertTitle>
         </Alert>
     </div>
     <Form class="p-5 space-y-5" @submit.prevent="submit"
@@ -294,16 +307,16 @@ const submit = () => {
                             :aria-expanded="empOpen"
                             class="w-full justify-between"
                         >
-                            {{ selectedEmployee?.name || "Employee..." }}
+                            {{ selectedEmployee?.name || (form.NewEmployeeName? form.NewEmployeeName : 'Employee...') }}
                             <ChevronsUpDownIcon class="opacity-50" />
                         </Button>
                         </PopoverTrigger>
                         <PopoverContent class="w-full p-0">
                         <Command>
-                            <CommandInput class="h-9 border border-gray-300 rounded-lg p-4 " placeholder="Search employee..." v-model="form.NewEmployeeName" />
+                            <CommandInput class="h-9 border border-gray-300 rounded-lg p-4 " placeholder="Search employee..." v-model="NewEmployee" />
                             <CommandList>
                             <CommandEmpty class=" pr-2 pl-2">
-                                <Badge class="bg-blue-500 w-full hover:cursor-pointer hover:bg-blue-800">
+                                <Badge @click="selectNewEmployee" class="bg-blue-500 w-full hover:cursor-pointer hover:bg-blue-800">
                                     Add this to the list
                                 </Badge>
                             </CommandEmpty>
@@ -349,15 +362,19 @@ const submit = () => {
                             :aria-expanded="officeOpen"
                             class="w-full justify-between"
                         >
-                            {{ selectedOffice?.name || "Office..." }}
+                            {{ selectedOffice?.name || (form.NewOfficeName ? form.NewOfficeName : "Office...") }}
                             <ChevronsUpDownIcon class="opacity-50" />
                         </Button>
                         </PopoverTrigger>
                         <PopoverContent class="w-full p-0">
                         <Command>
-                            <CommandInput class="h-9" placeholder="Search office..." />
+                            <CommandInput class="h-9" placeholder="Search office..." v-model="NewOfficeName" />
                             <CommandList>
-                            <CommandEmpty>No office found.</CommandEmpty>
+                            <CommandEmpty>
+                                <Badge @click="selectNewOffice" class="bg-blue-500 w-full hover:cursor-pointer hover:bg-blue-800">
+                                    Add this to the list
+                                </Badge>
+                            </CommandEmpty>
                             <CommandGroup>
                                 <CommandItem
                                 v-for="office in props.offices"

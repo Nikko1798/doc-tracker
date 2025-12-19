@@ -7,23 +7,23 @@ use App\Models\Document;
 class DocumentRepository
 {
     public function store($request){
-        DB::transaction(function () use($request){
-            $document=Document::create([
-                'complexity_id'=>$request['complexity'],
-                'document_type_id'=>$request['document_type'],
-                'date_received'=>$request['date_received'],
-                'control_number'=>$request['control_number'],
-                'title'=>$request['title'],
-            ]);
-            self::attachDocumentDetail($document, $request);
-        });
-        return $request;
+        // DB::transaction(function () use($request){
+           
+        // });
+        $document=Document::create([
+            'complexity_id'=>$request['complexity'],
+            'document_type_id'=>$request['document_type'],
+            'date_received'=>$request['date_received'],
+            'control_number'=>$request['control_number'],
+            'title'=>$request['title'],
+        ]);
+        return $document;
     }
     public function attachDocumentDetail($document, $request)
     {
-        $document->document_detail()->create([
-            'ncca_end_user_id'=> $request['ncca_end_user'],
-            'office_concerned_id'=> $request['office_concerned'],
+        $documentDetail=$document->document_detail()->create([
+            // 'ncca_end_user_id'=> $request['ncca_end_user'],
+            // 'office_concerned_id'=> $request['office_concerned'],
             'other_details'=> $request['other_details'],
             'remarks'=> $request['person_claiming_or_remarks'],
             'authority_or_fund_source'=> $request['authority_or_fund_source'],
@@ -33,6 +33,15 @@ class DocumentRepository
             'concerned_party_or_supplier'=> $request['concerned_party_or_supplier'],
             'total_service_amount'=> $request['total_service_amount'],
         ]);
+        return $documentDetail;
+    }
+    public function attachToEmployee($employee, $documentDetail)
+    {
+        $employee->document_details()->save($documentDetail);
+    }
+    public function attachToOffice($office, $documentDetail)
+    {
+        $office->document_details()->save($documentDetail);
     }
     public function fetchPublicDocuments($request){
         $perPage = $request->input('perPage', 10); // Default to 10 per page
