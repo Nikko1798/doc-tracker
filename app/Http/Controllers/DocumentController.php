@@ -12,13 +12,17 @@ use App\Models\DocumentType;
 use App\Models\Codetable;
 use App\Models\Office;
 use App\Models\Employee;
+use App\Models\Document;
 
+use App\Repositories\DocumentRepository;
 use App\Services\DocumentService;
 class DocumentController extends Controller
 {
     //
-    protected $documentService;
-    public function __construct(DocumentService $documentService){
+    protected $documentService; 
+    protected $documentRepository;
+    public function __construct(DocumentService $documentService,DocumentRepository $documentRepository){
+        $this->documentRepository=$documentRepository;
         $this->documentService=$documentService;
     }
     public function index(): Response
@@ -44,5 +48,9 @@ class DocumentController extends Controller
     public function fetchAllDocuments(Request $request)
     {
         return $this->documentService->fetchAllDocuments($request);
+    }
+    public function updateDocumentStatus(Request $request, Document $document)
+    {
+        return $this->documentRepository->updateDocumentStatus($request, $document);
     }
 }

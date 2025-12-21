@@ -129,6 +129,7 @@ const selectedEmployee = computed(() =>
 )
 function selecEmployee(selectedValue: string) {
     form.ncca_end_user = selectedValue === form.ncca_end_user ? '' : selectedValue
+    form.NewEmployeeName='';
     empOpen.value = false
 }
 function selectNewEmployee(){
@@ -142,6 +143,7 @@ const selectedOffice = computed(() =>
 function selectOffice(selectedValue: string) {
 
     form.office_concerned = selectedValue === form.office_concerned ? '' : selectedValue
+    form.NewOfficeName=''
     officeOpen.value = false
 }
 function selectNewOffice(){

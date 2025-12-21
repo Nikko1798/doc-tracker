@@ -5,6 +5,29 @@
     import Button from '@/components/ui/button/Button.vue';
     import { PlusIcon } from 'lucide-vue-next';
     import { Link } from '@inertiajs/vue3';
+    import { usePage } from '@inertiajs/vue3';
+    import axios from 'axios';
+    import { toast } from 'vue3-toastify';
+    import 'vue3-toastify/dist/index.css';
+
+    const pageProps=usePage();
+    const updateDocumentStatus=( async (event: Event, documentId: any)=>{
+        const target=event.target as HTMLSelectElement
+        try
+        {
+            const response =  await axios.patch(route('document.update-doc-status', documentId), 
+                { doc_status: target.value },{
+                
+                });
+            toast.success("Document status successfully updated", {
+                autoClose: 1000,
+            }); //
+        }
+        catch(error: any)
+        {
+
+        }
+    })
     </script>
     
     <template>
@@ -17,7 +40,7 @@
         <Datatable :apiUrl="route('document.fetch-all-documents')" 
             :extraParams="{}"
             :tableHeaders="[]"
-            :visible-columns="['id', 'date_received', 'document_type', 'other_details', 
+            :visible-columns="['document_status', 'date_received', 'document_type', 'other_details', 
             'title','authority_or_fund_source','ncca_end_user', 'office_concerned', 'control_number',
             'date_time_ready', 'date_time_released', 'service_to_ncca', 'concerned_party_or_supplier',
             'total_service_amount']" 
@@ -25,8 +48,8 @@
             :itemsPerPage="1"
             eventName="refresh-all-documents"
            >
-             <template #header-id>
-                <div class="text-white">ID</div>
+             <template #header-document_status>
+                <div class="text-white">Document Status</div>
             </template>
             <template #header-date_received>
                 <div class="text-white">Date Received</div>
@@ -71,6 +94,17 @@
                 <div class="text-white">Total Service Amount</div>
             </template>
             <!-- for column data manipulation -->
+            <template #cell-0="{ rowData }">
+                <span>
+                    <select
+                        @change="(event)=>updateDocumentStatus(event,rowData.id)" id="countries" class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
+                        <option v-if="!rowData.document_status_id" selected>Select status</option>
+                        <option v-else value="">Select status</option>
+                        <option  v-for="(item, index) in pageProps.props.documentStatus" :selected="rowData.document_status_id===item['id']"
+                            :key=" item['id'] " :value="item['id']">{{ item['codevalue'] }}</option>
+                    </select>
+                </span>
+            </template>
             <template #cell-1="{ rowData }">
                 <span>
                     {{

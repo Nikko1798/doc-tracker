@@ -79,7 +79,7 @@ class DocumentRepository
         $page = $request->input('page', 1); // Default page 1
         $doc= Document::select('documents.id',
                 'documents.date_received',
-                'documents.title',
+                'documents.title','documents.document_status_id',
                 'documents.control_number',
                 'document_details.document_id',
                 'document_details.ncca_end_user_id',
@@ -107,5 +107,12 @@ class DocumentRepository
                 $doc->orderBy($request->sortBy, $request->sortOrder);
             }
             return  $doc->paginate($perPage, ['*'], 'page', $page);
+    }
+    public function updateDocumentStatus($request, $document)
+    {
+        $doc=$document->update([
+            'document_status_id'=> empty($request['doc_status']) ? null : $request['doc_status']
+        ]);
+        return $doc;
     }
 }

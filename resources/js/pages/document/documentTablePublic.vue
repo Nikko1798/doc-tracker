@@ -2,6 +2,7 @@
 import Datatable from '@/components/Datatable.vue';
 import { toRaw } from 'vue';
 import { route } from 'ziggy-js';
+
 </script>
 
 <template>

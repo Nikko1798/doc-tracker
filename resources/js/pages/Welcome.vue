@@ -2,6 +2,8 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 import documentTablePublic from './document/documentTablePublic.vue';
+import { usePage } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
 withDefaults(
     defineProps<{
         canRegister: boolean;
@@ -10,6 +12,7 @@ withDefaults(
         canRegister: true,
     },
 );
+
 </script>
 <style>
     .col-document_type, .col-other_details{

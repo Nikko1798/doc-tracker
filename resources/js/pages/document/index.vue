@@ -26,7 +26,8 @@ const props=defineProps({
     employees:{
         type: Array as PropType<Record<string, any>[]>,
         default: ()=>[]
-    }
+    },
+    
 });
 </script>
 
@@ -34,6 +35,7 @@ const props=defineProps({
     <Head title="Document" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <DocumentDetailForm :documentTypes="documentTypes" :complexities="complexities" :offices="offices" :employees="employees"/>
+        <DocumentDetailForm :documentTypes="documentTypes" 
+        :complexities="complexities" :offices="offices" :employees="employees"/>
     </AppLayout>
 </template>
