@@ -27,7 +27,8 @@ class DocumentController extends Controller
     }
     public function index(): Response
     {
-        $documentTypes=DocumentType::select('id', 'name')->where('isParent', false)->get();
+        $documentTypes=DocumentType::select('id', 'name')
+        ->where('isParent', false)->get();
         $complexities=Codetable::where('codename', 'COMPLEXITY')->get();
         $offices=Office::all();
         $employees=Employee::all();
@@ -41,6 +42,10 @@ class DocumentController extends Controller
     public function store(Request $request){
        return $this->documentService->store($request);
     } 
+    public function updateDocument(Request $request, Document $document)
+    {
+       return $this->documentService->updateDocument($request, $document);
+    }
     public function fetchPublicDocuments(Request $request)
     {
         return $this->documentService->fetchPublicDocuments($request);
@@ -52,5 +57,9 @@ class DocumentController extends Controller
     public function updateDocumentStatus(Request $request, Document $document)
     {
         return $this->documentRepository->updateDocumentStatus($request, $document);
+    }
+    public function getDocument(Document $document)
+    {
+        return $this->documentRepository->getDocument($document);
     }
 }

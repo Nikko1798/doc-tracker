@@ -26,6 +26,22 @@ class DocumentService
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+    public function updateDocument($request, $document)
+    {
+        try{
+            return DB::transaction(function () use($request, $document){
+                $doc=$this->documentRepository->updateDocument($request, $document);
+                $documentDetail=$this->documentRepository->attachDocumentDetail($document, $request);
+                self::attachOfficeToDocumentDetail($request, $documentDetail);
+                self::attachEmployeeToDocumentDetail($request, $documentDetail);
+                return redirect()->back()->with('success', 'Updated successfully');
+            });
+        }
+        catch(Exception $e)
+        {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
     public function attachOfficeToDocumentDetail($request, $documentDetail)
     {
         if(empty($request['office_concerned']))
