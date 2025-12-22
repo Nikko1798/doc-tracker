@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, toRaw } from 'vue';
+import { onMounted, PropType, toRaw } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -13,6 +13,25 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
 ];
+const props=defineProps({
+    documentTypes:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    complexities:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    offices:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    employees:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    
+});
 
 </script>
 
@@ -23,7 +42,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-            <DocumentTableForAuthUser/>
+            <DocumentTableForAuthUser :documentTypes="documentTypes" 
+            :complexities="complexities" :offices="offices" :employees="employees"/>
         </div>
     </AppLayout>
 </template>

@@ -19,9 +19,22 @@ class DocumentRepository
         ]);
         return $document;
     }
+    public function updateDocument($request, $document)
+    {
+        $doc=$document->update([
+            'complexity_id'=>$request['complexity'],
+            'document_type_id'=>$request['document_type'],
+            'date_received'=>$request['date_received'],
+            'control_number'=>$request['control_number'],
+            'title'=>$request['title'],
+        ]);
+        return $doc;
+    }
     public function attachDocumentDetail($document, $request)
     {
-        $documentDetail=$document->document_detail()->create([
+        $documentDetail=$document->document_detail()->updateOrCreate(
+            [],
+            [
             // 'ncca_end_user_id'=> $request['ncca_end_user'],
             // 'office_concerned_id'=> $request['office_concerned'],
             'other_details'=> $request['other_details'],
@@ -77,7 +90,7 @@ class DocumentRepository
     public function fetchAllDocuments($request){
         $perPage = $request->input('perPage', 10); // Default to 10 per page
         $page = $request->input('page', 1); // Default page 1
-        $doc= Document::select('documents.id',
+        $doc= Document::select('documents.id', 'documents.document_type_id', 'documents.complexity_id',
                 'documents.date_received',
                 'documents.title','documents.document_status_id',
                 'documents.control_number',
@@ -114,5 +127,9 @@ class DocumentRepository
             'document_status_id'=> empty($request['doc_status']) ? null : $request['doc_status']
         ]);
         return $doc;
+    }
+    public function getDocument($document)
+    {
+        return $document;
     }
 }

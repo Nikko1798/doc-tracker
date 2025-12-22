@@ -1,15 +1,34 @@
 <script lang="ts" setup>
     import Datatable from '@/components/Datatable.vue';
-    import { toRaw } from 'vue';
+    import { PropType, toRaw } from 'vue';
     import { route } from 'ziggy-js';
     import Button from '@/components/ui/button/Button.vue';
-    import { PlusIcon } from 'lucide-vue-next';
+    import { PlusIcon, PenBoxIcon, PenBox } from 'lucide-vue-next';
     import { Link } from '@inertiajs/vue3';
     import { usePage } from '@inertiajs/vue3';
     import axios from 'axios';
     import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
-
+    import documentDrawerForm from './documentDrawerForm.vue';
+    const props=defineProps({
+        documentTypes:{
+            type: Array as PropType<Record<string, any>[]>,
+            default: ()=>[]
+        },
+        complexities:{
+            type: Array as PropType<Record<string, any>[]>,
+            default: ()=>[]
+        },
+        offices:{
+            type: Array as PropType<Record<string, any>[]>,
+            default: ()=>[]
+        },
+        employees:{
+            type: Array as PropType<Record<string, any>[]>,
+            default: ()=>[]
+        },
+        
+    });
     const pageProps=usePage();
     const updateDocumentStatus=( async (event: Event, documentId: any)=>{
         const target=event.target as HTMLSelectElement
@@ -28,6 +47,11 @@
 
         }
     })
+    const getDocument=(async (documentId: number)=>{
+    
+        const response=await axios.get(route('document.get-document', documentId));
+        alert(response.data.id);
+    })
     </script>
     
     <template>
@@ -43,7 +67,7 @@
             :visible-columns="['document_status', 'date_received', 'document_type', 'other_details', 
             'title','authority_or_fund_source','ncca_end_user', 'office_concerned', 'control_number',
             'date_time_ready', 'date_time_released', 'service_to_ncca', 'concerned_party_or_supplier',
-            'total_service_amount']" 
+            'total_service_amount', 'actions']" 
             :sortableColumns="['id', 'title', 'date_received' ]"
             :itemsPerPage="1"
             eventName="refresh-all-documents"
@@ -92,6 +116,9 @@
             
             <template #header-total_service_amount>
                 <div class="text-white">Total Service Amount</div>
+            </template>
+            <template #header-actions>
+                <div class="text-white">Action</div>
             </template>
             <!-- for column data manipulation -->
             <template #cell-0="{ rowData }">
@@ -147,6 +174,12 @@
                         }).format(rowData.total_service_amount)
                     }}
                 </span>
+            </template>
+            <template #cell-14="{ rowData }">
+                <!-- <Button class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Edit</Button> -->
+                
+                <documentDrawerForm :rowData="rowData" :documentTypes="documentTypes" 
+                :complexities="complexities" :offices="offices" :employees="employees"></documentDrawerForm>
             </template>
         </Datatable>
     </template>
