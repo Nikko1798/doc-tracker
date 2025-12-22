@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
+use App\Models\Codetable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,5 +22,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        Inertia::share([
+            'flash' => fn () => [
+                'success' => session('success'),
+                'error'   => session('error'),
+            ],
+            'documentStatus' => fn () => Codetable::where('codename', 'DOCUMENT-STATUS')->get()
+        ]);
     }
 }

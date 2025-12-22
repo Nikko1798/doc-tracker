@@ -7,16 +7,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
-import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/vue3';
-
+import password, { email } from '@/routes/password';
+import { Form, Head, useForm } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
+import { LoaderCircle } from 'lucide-vue-next';
 defineProps<{
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
 }>();
+
+const form=useForm({
+    email: '',
+    password: '',
+});
 </script>
 
 <template>
@@ -34,7 +39,8 @@ defineProps<{
         </div>
 
         <Form
-            v-bind="store.form()"
+            :action="route('login.store')"
+            method="POST"
             :reset-on-success="['password']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
@@ -44,6 +50,7 @@ defineProps<{
                     <Label for="email">Email address</Label>
                     <Input
                         id="email"
+                        v-model="form.email"
                         type="email"
                         name="email"
                         required
@@ -60,7 +67,7 @@ defineProps<{
                         <Label for="password">Password</Label>
                         <TextLink
                             v-if="canResetPassword"
-                            :href="request()"
+                            :href="route('password.request')"
                             class="text-sm"
                             :tabindex="5"
                         >
@@ -69,6 +76,7 @@ defineProps<{
                     </div>
                     <Input
                         id="password"
+                        v-model="form.password"
                         type="password"
                         name="password"
                         required
@@ -93,7 +101,7 @@ defineProps<{
                     :disabled="processing"
                     data-test="login-button"
                 >
-                    <Spinner v-if="processing" />
+                    <LoaderCircle v-if="processing" />
                     Log in
                 </Button>
             </div>
@@ -103,7 +111,7 @@ defineProps<{
                 v-if="canRegister"
             >
                 Don't have an account?
-                <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
+                <TextLink :href="route('register')" :tabindex="5">Sign up</TextLink>
             </div>
         </Form>
     </AuthBase>
