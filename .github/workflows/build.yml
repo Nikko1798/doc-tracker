@@ -51,7 +51,7 @@ jobs:
         git add -f public/build  # Force add the ignored build directory
         if ! git diff --cached --quiet; then
           git commit -m "Build assets for production"
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Nikko1798/project-tracker.git HEAD:main
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Nikko1798/doc-tracker.git HEAD:main
         else
           echo "No changes in build assets, skipping commit."
         fi
