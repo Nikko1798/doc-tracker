@@ -71,14 +71,27 @@ class DocumentRepository
                 'document_details.authority_or_fund_source',
                 'document_details.date_time_ready',
                 'document_details.date_time_released',
-                'document_details.remarks', 'employees.name as ncca_end_user' , 'offices.name as office_concerned','codetables.codename as complexity', 'document_types.name as document_type')
+                'document_details.remarks', 'employees.name as ncca_end_user' , 
+                'offices.name as office_concerned','codetables.codevalue as complexity',
+                 'document_types.name as document_type', 'document_status.codevalue as document_status')
             ->leftJoin('document_details', 'document_details.document_id', 'documents.id')
             ->leftJoin('employees', 'employees.id', 'document_details.ncca_end_user_id')
             ->leftJoin('offices', 'offices.id', 'document_details.office_concerned_id')
             ->leftJoin('document_types', 'document_types.id', 'documents.document_type_id')
             ->leftJoin('codetables', 'codetables.id', 'documents.complexity_id')
+            ->leftJoin('codetables as document_status', 'document_status.id', 'documents.document_status_id')
             ->where(function ($query) use ($request){
-                $query->where('documents.title', 'like', '%' . $request->name . '%');
+                $query->where('documents.document_type_id', $request->document_type)
+                ->orWhere('document_types.document_type_id', $request->document_type);
+            })
+            ->where(function ($query) use ($request){
+                $query->where('documents.title', 'like', '%' . $request->name . '%')
+                ->orWhere('documents.control_number', 'like', '%' . $request->name . '%')
+                ->orWhere('documents.control_number', 'like', '%' . $request->name . '%')
+                ->orWhere('document_details.other_details', 'like', '%' . $request->name . '%')
+                ->orWhere('offices.name', 'like', '%' . $request->name . '%')
+                ->orWhere('document_types.name', 'like', '%' . $request->name . '%')
+                ->orWhere('employees.name', 'like', '%' . $request->name . '%');
             });
     
             if(isset($request->sortBy))
@@ -112,7 +125,17 @@ class DocumentRepository
             ->leftJoin('document_types', 'document_types.id', 'documents.document_type_id')
             ->leftJoin('codetables', 'codetables.id', 'documents.complexity_id')
             ->where(function ($query) use ($request){
-                $query->where('documents.title', 'like', '%' . $request->name . '%');
+                $query->where('documents.document_type_id', $request->document_type)
+                ->orWhere('document_types.document_type_id', $request->document_type);
+            })
+            ->where(function ($query) use ($request){
+                $query->where('documents.title', 'like', '%' . $request->name . '%')
+                ->orWhere('documents.control_number', 'like', '%' . $request->name . '%')
+                ->orWhere('documents.control_number', 'like', '%' . $request->name . '%')
+                ->orWhere('document_details.other_details', 'like', '%' . $request->name . '%')
+                ->orWhere('offices.name', 'like', '%' . $request->name . '%')
+                ->orWhere('document_types.name', 'like', '%' . $request->name . '%')
+                ->orWhere('employees.name', 'like', '%' . $request->name . '%');
             });
     
             if(isset($request->sortBy))

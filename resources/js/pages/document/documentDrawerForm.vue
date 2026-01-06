@@ -52,6 +52,7 @@ import { route } from 'ziggy-js'
 import axios from 'axios'
 import { eventBus } from '@/composables/mitt'
 import { usePage } from '@inertiajs/vue3'
+import {toast} from 'vue-sonner'
 const props=defineProps({
     documentTypes:{
         type: Array as PropType<Record<string, any>[]>,
@@ -76,7 +77,8 @@ const props=defineProps({
     },
 });
 const page = usePage() as any
-const successMessage = computed(() => page.props.flash.success)
+const successMessage = ref<string | null>(null)
+
 
 const defaultPlaceholder = today(getLocalTimeZone())
 const dateReceived = ref() as Ref<DateValue>
@@ -110,7 +112,7 @@ const form = useForm<{ date_received: string | null,
     date_released: null,
     service_to_ncca: '',
     concerned_party_or_supplier: '',
-    total_service_amount: 0.00,
+    total_service_amount: 0,
 
     NewEmployeeName: '',
     NewOfficeName: '',
@@ -133,6 +135,13 @@ watch(dateReleased, (newVal, oldVal) => {
     : null
 })
 
+watch(
+  () => page.props.flash?.success,
+  (value) => {
+    successMessage.value = value
+  },
+  { immediate: true }
+)
 
 const officeOpen = ref(false)
 const empOpen = ref(false)
@@ -168,13 +177,13 @@ function selectNewOffice(){
 const submit = () => {
   form.patch(route('document.update-document', props.rowData.id),{
     onSuccess: ()=>{
-        form.reset();
         eventBus.emit('refresh-all-documents');
     }
   })
     
 }
 function fillForm(){
+    successMessage.value=null;
     const document=props.rowData
     console.log(toRaw(document.document_type))
     form.document_type=document.document_type_id
@@ -189,9 +198,9 @@ function fillForm(){
     form.office_concerned=document.office_concerned_id
     form.date_ready=document.date_ready
     form.date_released=document.date_released
-    form.service_to_ncca=document.service_to_ncca
-    form.concerned_party_or_supplier=document.concerned_party_or_supplier
-    form.total_service_amount=document.total_service_amount
+    form.service_to_ncca=document.service_to_ncca ?? ''
+    form.concerned_party_or_supplier=document.concerned_party_or_supplier  ?? ''
+    form.total_service_amount=document.total_service_amount  ?? 0.00
 
 }
 </script>
@@ -210,7 +219,7 @@ function fillForm(){
                     <AlertTitle >{{successMessage}}</AlertTitle>
                 </Alert>
             </div>
-            <Form class="p-5 space-y-5" @submit.prevent="submit"
+            <Form class="p-5 space-y-5" 
                 v-slot="{ errors, processing }">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 
@@ -538,14 +547,15 @@ function fillForm(){
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="space-y-2">
                         <Label>Total Service Amount (Php.)</Label>
-                        <Input type="number" v-model="form.total_service_amount" id="total_service_amount" name="total_service_amount"
+                        <Input type="number" v-model="form.total_service_amount"
+                        id="total_service_amount" name="total_service_amount"
                         placeholder="enter total service amount here...."/>
                         <InputError :message="form.errors.total_service_amount"></InputError>
                     </div>
                 </div>
                 
                 <div class="flex items-center justify-center ">
-                    <Button type="submit" class="cursor-pointer">Submit</Button>
+                    <Button type="button" @click="submit" class="cursor-pointer">Submit</Button>
                 </div>
                 
             </Form>
