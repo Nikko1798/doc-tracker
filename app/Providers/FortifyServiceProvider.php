@@ -13,6 +13,8 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 class FortifyServiceProvider extends ServiceProvider
 {
     /**
@@ -31,6 +33,25 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        Fortify::ignoreRoutes();
+        Route::get('/register', function () {
+            // Only allow authenticated users
+            if (!Auth::check()) {
+                abort(403); // or redirect()->route('login')
+            }
+            return Inertia::render('auth/Register');
+        })->middleware(['web', 'auth'])->name('register');
+
+        Route::post('/register', function (\Illuminate\Http\Request $request, CreateNewUser $creator) {
+            // Only allow authenticated users
+            if (!Auth::check()) {
+                abort(403);
+            }
+
+            $creator->create($request->all());
+
+            return redirect()->back()->with('success', 'User successfully created!');
+        })->middleware(['web', 'auth'])->name('register.store');
     }
 
     /**

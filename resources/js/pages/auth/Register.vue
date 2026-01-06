@@ -9,15 +9,19 @@ import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import password, { email } from '@/routes/password';
 import { store } from '@/routes/register';
-import { Form, Head, useForm } from '@inertiajs/vue3';
+import { Form, Head, useForm, usePage } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, CheckCheck } from 'lucide-vue-next';
+import Alert from '@/components/ui/alert/Alert.vue';
+import AlertTitle from '@/components/ui/alert/AlertTitle.vue';
 const form=useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation:''
 })
+
+const page = usePage() as any
 </script>
 
 <template>
@@ -26,7 +30,12 @@ const form=useForm({
         description="Enter your details below to create your account"
     >
         <Head title="Register" />
-
+        <div class="grid">
+            <Alert v-if="page.props.flash.success" class="bg-green-700 text-white">
+                <CheckCheck ></CheckCheck>
+                <AlertTitle >{{page.props.flash.success}}</AlertTitle>
+            </Alert>
+        </div>
         <Form
             :action="route('register.store')"
             method="POST"
