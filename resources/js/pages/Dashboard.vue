@@ -7,6 +7,12 @@ import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
 import DocumentTableForAuthUser from './document/documentTableForAuthUser.vue';
 import { usePage } from '@inertiajs/vue3';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs'
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -42,8 +48,33 @@ const props=defineProps({
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-            <DocumentTableForAuthUser :documentTypes="documentTypes" 
-            :complexities="complexities" :offices="offices" :employees="employees"/>
+            <Tabs default-value="moa" class="w-full h-full">
+                <TabsList>
+                    <TabsTrigger value="moa">
+                        MOA
+                    </TabsTrigger>
+                    <TabsTrigger value="contracts">
+                        Contracts
+                    </TabsTrigger>
+                </TabsList>
+                <div class="flex-1 min-h-0">
+                    <TabsContent
+                        value="moa"
+                        class="h-full overflow-y-auto overflow-x-hidden"
+                    >
+                        <DocumentTableForAuthUser :documentTypes="documentTypes" 
+                        :complexities="complexities" :offices="offices" :employees="employees" :documentType="2"/>
+                    </TabsContent>
+
+                    <TabsContent
+                        value="contracts"
+                        class="h-full overflow-y-auto overflow-x-hidden"
+                    >
+                        <DocumentTableForAuthUser :documentTypes="documentTypes" 
+                        :complexities="complexities" :offices="offices" :employees="employees" :documentType="1"/>
+                    </TabsContent>
+                </div>
+            </Tabs>
         </div>
     </AppLayout>
 </template>

@@ -16,6 +16,7 @@ use App\Models\Document;
 
 use App\Repositories\DocumentRepository;
 use App\Services\DocumentService;
+use App\Http\Requests\DocumentFormRequest;
 class DocumentController extends Controller
 {
     //
@@ -39,10 +40,10 @@ class DocumentController extends Controller
             'employees'=>$employees,
         ]);
     } 
-    public function store(Request $request){
+    public function store(DocumentFormRequest $request){
        return $this->documentService->store($request);
     } 
-    public function updateDocument(Request $request, Document $document)
+    public function updateDocument(DocumentFormRequest $request, Document $document)
     {
        return $this->documentService->updateDocument($request, $document);
     }

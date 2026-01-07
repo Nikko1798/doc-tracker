@@ -1,23 +1,35 @@
 <script lang="ts" setup>
 import Datatable from '@/components/Datatable.vue';
-import { toRaw } from 'vue';
+import { onMounted, toRaw } from 'vue';
 import { route } from 'ziggy-js';
-
+import { Badge } from '@/components/ui/badge'
+const props=defineProps({
+    routeName: {
+        type: String,
+        default: '',
+        required: true
+    },
+    documentType: {
+        type: Number,
+        default: 0,
+        required: true
+    }
+});
 </script>
 
 <template>
-   <Datatable :apiUrl="route('document.fetch-public-documents')" 
-        :extraParams="{}"
+   <Datatable :apiUrl="route(props.routeName)" 
+        :extraParams="{'document_type':props.documentType}"
         :tableHeaders="[]"
-        :visible-columns="['id', 'date_received', 'document_type', 'other_details', 
+        :visible-columns="['document_status', 'date_received', 'document_type', 'other_details', 
         'title','authority_or_fund_source','ncca_end_user', 'office_concerned', 'control_number',
         'date_time_ready', 'date_time_released']" 
-        :sortableColumns="['id', 'title', 'date_received' ]"
+        :sortableColumns="['title', 'date_received' ]"
         :itemsPerPage="1"
         eventName="refresh-public-documents"
        >
-         <template #header-id>
-            <div class="text-white">ID</div>
+         <template #header-document_status>
+            <div class="text-white">Document Status</div>
         </template>
         <template #header-date_received>
             <div class="text-white">Date Received</div>
@@ -50,7 +62,11 @@ import { route } from 'ziggy-js';
             <div class="text-white">Date released</div>
         </template>
         
-        <!-- <template #cell-4="{ rowData }"> -->
+        <template #cell-0="{ rowData }">
+             <Badge variant="secondary" class="bg-blue-500 text-white">
+                {{ rowData.document_status ? rowData.document_status : "N/A" }}
+            </Badge>
+        </template>
             
             <!-- <div class="space-y-2 space-x-2">
                 <ProductMasterlistForm 

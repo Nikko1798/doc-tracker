@@ -170,3 +170,48 @@
         @apply bg-background text-foreground;
     }
 }
+
+.button{
+    background-color: #2e3cbf;
+}
+.button:hover{
+
+    background-color: #4d58bf;
+    cursor: pointer;
+}
+@font-face {
+  font-family: "jeepney";
+  src: url("/resources/fonts/93b5.woff2") format("woff2"),
+       url("/resources/fonts/06dd.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "jeepney2";
+  src: url("/resources/fonts/dfa3.woff2") format("woff2"),
+       url("/resources/fonts/f625.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+
+}
+@font-face {
+  font-family: 'CubaoRegular';
+  src: url('/resources/fonts/cubao_regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+ .font-cubao {
+    font-family: "CubaoRegular", sans-serif;
+  }
+
+  .button-submit{
+    background-color: #007FFF !important;
+  }
+  .button-submit:hover{
+    background-color: #2A52BE !important;
+    cursor: pointer;
+  }

@@ -7,7 +7,6 @@
     import { Link } from '@inertiajs/vue3';
     import { usePage } from '@inertiajs/vue3';
     import axios from 'axios';
-    import { toast } from 'vue3-toastify';
     import 'vue3-toastify/dist/index.css';
     import documentDrawerForm from './documentDrawerForm.vue';
     const props=defineProps({
@@ -27,7 +26,11 @@
             type: Array as PropType<Record<string, any>[]>,
             default: ()=>[]
         },
-        
+        documentType: {
+        type: Number,
+        default: 0,
+        required: true
+        }
     });
     const pageProps=usePage();
     const updateDocumentStatus=( async (event: Event, documentId: any)=>{
@@ -38,9 +41,9 @@
                 { doc_status: target.value },{
                 
                 });
-            toast.success("Document status successfully updated", {
-                autoClose: 1000,
-            }); //
+            // toast.success("Document status successfully updated", {
+            //     autoClose: 1000,
+            // }); //
         }
         catch(error: any)
         {
@@ -62,7 +65,7 @@
             </Link>
         </div>
         <Datatable :apiUrl="route('document.fetch-all-documents')" 
-            :extraParams="{}"
+            :extraParams="{'document_type':props.documentType}"
             :tableHeaders="[]"
             :visible-columns="['document_status', 'date_received', 'document_type', 'other_details', 
             'title','authority_or_fund_source','ncca_end_user', 'office_concerned', 'control_number',

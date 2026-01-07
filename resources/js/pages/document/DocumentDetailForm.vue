@@ -42,7 +42,7 @@ import { CheckIcon, ChevronsUpDownIcon } from 'lucide-vue-next'
 import InputError from '@/components/InputError.vue'
 import { route } from 'ziggy-js'
 import axios from 'axios'
-
+import { toast } from 'vue-sonner'
 import { usePage } from '@inertiajs/vue3'
 const props=defineProps({
     documentTypes:{
@@ -168,6 +168,13 @@ const submit = () => {
   form.post(route('document.store'),{
     onSuccess: ()=>{
         form.reset();
+         toast('Event has been created', {
+        description: 'Sunday, December 03, 2023 at 9:00 AM',
+        action: {
+          label: 'Undo',
+          onClick: () => console.log('Undo'),
+        },
+      })
     }
   })
     
