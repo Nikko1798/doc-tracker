@@ -40,6 +40,13 @@ class DocumentController extends Controller
             'employees'=>$employees,
         ]);
     } 
+    public function documentDetailView(Document $document){
+        $document=$document
+        ->with('document_detail', 'document_type')->first();
+        return Inertia::render('document/DocumentViewPage', [
+            'document' => $document
+        ]);
+    }
     public function store(DocumentFormRequest $request){
        return $this->documentService->store($request);
     } 
@@ -62,5 +69,8 @@ class DocumentController extends Controller
     public function getDocument(Document $document)
     {
         return $this->documentRepository->getDocument($document);
+    }
+    public function generateQr(){
+        return $this->documentService->generateQr();
     }
 }
