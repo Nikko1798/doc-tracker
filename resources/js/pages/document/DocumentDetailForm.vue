@@ -168,13 +168,8 @@ const submit = () => {
   form.post(route('document.store'),{
     onSuccess: ()=>{
         form.reset();
-         toast('Event has been created', {
-        description: 'Sunday, December 03, 2023 at 9:00 AM',
-        action: {
-          label: 'Undo',
-          onClick: () => console.log('Undo'),
-        },
-      })
+        window.open(page.props.flash.generatedrRoute, '_blank')
+       
     }
   })
     

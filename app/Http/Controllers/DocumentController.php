@@ -42,7 +42,8 @@ class DocumentController extends Controller
     } 
     public function documentDetailView(Document $document){
         $document=$document
-        ->with('document_detail', 'document_type')->first();
+        ->with('document_detail', 'document_type', 'document_detail.ncca_end_user', 
+        'document_detail.office_concerned')->first();
         return Inertia::render('document/DocumentViewPage', [
             'document' => $document
         ]);
@@ -70,7 +71,7 @@ class DocumentController extends Controller
     {
         return $this->documentRepository->getDocument($document);
     }
-    public function generateQr(){
-        return $this->documentService->generateQr();
+    public function generateQr(Document $document){
+        return $this->documentService->generateQr($document);
     }
 }

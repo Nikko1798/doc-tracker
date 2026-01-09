@@ -5,7 +5,7 @@ use App\Repositories\DocumentRepository;
 use Illuminate\Support\Facades\DB;
 use App\Models\Employee;
 use App\Models\Office;
-
+use Illuminate\Support\Str;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -30,7 +30,10 @@ class DocumentService
                 $documentDetail=$this->documentRepository->attachDocumentDetail($document, $request);
                 self::attachOfficeToDocumentDetail($request, $documentDetail);
                 self::attachEmployeeToDocumentDetail($request, $documentDetail);
-                return redirect()->back()->with('success', 'Saved successfully');
+                self::generateQr($document);
+                return redirect()->back()
+                ->with('success', 'Saved successfully')
+                ->with('generatedrRoute', route('document.generateQr', $document->id));
             });
         }
         catch(Exception $e){
@@ -100,10 +103,10 @@ class DocumentService
         $document=$this->documentRepository->fetchAllDocuments($request);
         return $document;
     }
-    public function generateQr(){
+    public function generateQr($document){
         $writer = new PngWriter();
         $qrCode = new QrCode(
-            data: 'google.com',
+            data: route('document.get-document', $document->id),
             encoding: new Encoding('UTF-8'),
             errorCorrectionLevel: ErrorCorrectionLevel::High,
             size: 300,
@@ -120,16 +123,20 @@ class DocumentService
         );
 
         $label = new Label(
-            text: 'Scan Me',
+            text: 'Control Number: ' . $document->control_number ?? "",
             textColor: new Color(0, 0, 0)
         );
 
         $result = $writer->write($qrCode, $logo, $label);
-
+       
+        $filename = Str::random(50) . '.png';
         // Optional validation
         // $writer->validateResult($result, 'google.com');
 
+        // return response($result->getString())
+        //     ->header('Content-Type', $result->getMimeType());
         return response($result->getString())
-            ->header('Content-Type', $result->getMimeType());
+        ->header('Content-Type', $result->getMimeType())
+        ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
     }
 }
