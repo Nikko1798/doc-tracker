@@ -172,7 +172,14 @@ import { ArrowUpDown } from 'lucide-vue-next'
                 </TableHeader>
 
                 <TableBody>
-                    <TableRow
+                    <TableRow v-if="filteredTableData.length<1">
+                        <td colspan="100%" class="">
+                            <div class="flex justify-center items-center h-24 w-full  font-semibold gap-2">
+                              <Search/>  No data available
+                            </div>
+                        </td>
+                    </TableRow>
+                    <TableRow v-else
                         v-for="(item, rowIndex) in filteredTableData"
                         :key="rowIndex"
                     >

@@ -3,7 +3,7 @@
     import { PropType, toRaw } from 'vue';
     import { route } from 'ziggy-js';
     import Button from '@/components/ui/button/Button.vue';
-    import { PlusIcon, PenBoxIcon, PenBox } from 'lucide-vue-next';
+    import { PlusIcon, PenBoxIcon, PenBox, QrCode } from 'lucide-vue-next';
     import { Link } from '@inertiajs/vue3';
     import { usePage } from '@inertiajs/vue3';
     import axios from 'axios';
@@ -50,11 +50,10 @@
 
         }
     })
-    const getDocument=(async (documentId: number)=>{
-    
-        const response=await axios.get(route('document.get-document', documentId));
-        alert(response.data.id);
-    })
+    const generateQr=((id: number)=>{
+        
+        window.open(route('document.generateQr', id), '_blank')
+    });
     </script>
     
     <template>
@@ -180,9 +179,14 @@
             </template>
             <template #cell-14="{ rowData }">
                 <!-- <Button class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Edit</Button> -->
-                
-                <documentDrawerForm :rowData="rowData" :documentTypes="documentTypes" 
-                :complexities="complexities" :offices="offices" :employees="employees"></documentDrawerForm>
+                <div class="space-x-2"> 
+                    <documentDrawerForm :rowData="rowData" :documentTypes="documentTypes" 
+                    :complexities="complexities" :offices="offices" :employees="employees"></documentDrawerForm>
+
+                   
+                    <Button @click="generateQr(rowData.id)" class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><QrCode/> Generate QR</Button>
+                   
+                </div>
             </template>
         </Datatable>
     </template>
