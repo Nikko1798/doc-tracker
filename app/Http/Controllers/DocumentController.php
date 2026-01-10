@@ -17,6 +17,8 @@ use App\Models\Document;
 use App\Repositories\DocumentRepository;
 use App\Services\DocumentService;
 use App\Http\Requests\DocumentFormRequest;
+
+use Barryvdh\DomPDF\Facade\Pdf;
 class DocumentController extends Controller
 {
     //
@@ -74,4 +76,5 @@ class DocumentController extends Controller
     public function generateQr(Document $document){
         return $this->documentService->generateQr($document);
     }
+    
 }

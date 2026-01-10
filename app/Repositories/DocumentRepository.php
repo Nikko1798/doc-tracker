@@ -45,6 +45,7 @@ class DocumentRepository
             'service_to_ncca'=> $request['service_to_ncca'],
             'concerned_party_or_supplier'=> $request['concerned_party_or_supplier'],
             'total_service_amount'=> $request['total_service_amount'],
+            'project_or_program'=>$request['title'],
         ]);
         return $documentDetail;
     }

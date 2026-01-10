@@ -15,6 +15,7 @@ use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\ValidationException;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DocumentService
 {
@@ -30,7 +31,8 @@ class DocumentService
                 $documentDetail=$this->documentRepository->attachDocumentDetail($document, $request);
                 self::attachOfficeToDocumentDetail($request, $documentDetail);
                 self::attachEmployeeToDocumentDetail($request, $documentDetail);
-                self::generateQr($document);
+                // $qrPath=self::generateQr($document);
+                
                 return redirect()->back()
                 ->with('success', 'Saved successfully')
                 ->with('generatedrRoute', route('document.generateQr', $document->id));
@@ -112,31 +114,41 @@ class DocumentService
             size: 300,
             margin: 5,
             roundBlockSizeMode: RoundBlockSizeMode::Margin,
-            foregroundColor: new Color(66, 135, 245),
+            foregroundColor: new Color(10, 10, 10),
             backgroundColor: new Color(255, 255, 255)
         );
 
         $logo = new Logo(
             path: public_path('images/logo.png'),
             resizeToWidth: 80,
-            punchoutBackground: false
+            punchoutBackground: true
         );
 
         $label = new Label(
-            text: 'Control Number: ' . $document->control_number ?? "",
+            text: '',
             textColor: new Color(0, 0, 0)
         );
 
-        $result = $writer->write($qrCode, $logo, $label);
+        $result = $writer->write($qrCode, null, $label);
        
         $filename = Str::random(50) . '.png';
-        // Optional validation
-        // $writer->validateResult($result, 'google.com');
+        $qrPath = storage_path('app/' . $filename);
+        $result->saveToFile($qrPath);
+        return self::downloadQrInPdf($qrPath, $document);
+    //     ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
+    }
+    public function downloadQrInPdf($imagepath, $document){
+        $data = [
+            'title' => $document->title,
+            'date_received' => $document->date_received,
+            'control_number' => $document->control_number,
+            'image' => $imagepath
+        ];
 
-        // return response($result->getString())
-        //     ->header('Content-Type', $result->getMimeType());
-        return response($result->getString())
-        ->header('Content-Type', $result->getMimeType())
-        ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
+        $pdf = Pdf::loadView('pdf.generatedQr', $data)
+            ->setPaper('A4', 'portrait');
+
+        $filename = $document->title . '_' . Str::random(10) . '.pdf';
+        return $pdf->download($filename);
     }
 }

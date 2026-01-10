@@ -284,7 +284,7 @@ function test(){
         </div>
         <div class="grid grid-cols-1  gap-2">
             <div class="space-y-2">
-                <Label>Other details</Label>
+                <Label>Person Claiming/Remarks</Label>
                 <Textarea v-model="form.person_claiming_or_remarks" id="person_claiming_or_remarks" 
                 name="person_claiming_or_remarks" rows="2" placeholder="enter remarks here...."></Textarea>
                 <InputError :message="form.errors.person_claiming_or_remarks"></InputError>
