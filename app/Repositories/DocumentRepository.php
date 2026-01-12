@@ -94,6 +94,7 @@ class DocumentRepository
                 ->orWhere('document_details.other_details', 'like', '%' . $request->name . '%')
                 ->orWhere('offices.name', 'like', '%' . $request->name . '%')
                 ->orWhere('document_types.name', 'like', '%' . $request->name . '%')
+                ->orWhere('document_details.remarks', 'like', '%' . $request->name . '%')
                 ->orWhere('employees.name', 'like', '%' . $request->name . '%');
             });
     
@@ -138,6 +139,7 @@ class DocumentRepository
                 ->orWhere('document_details.other_details', 'like', '%' . $request->name . '%')
                 ->orWhere('offices.name', 'like', '%' . $request->name . '%')
                 ->orWhere('document_types.name', 'like', '%' . $request->name . '%')
+                ->orWhere('document_details.remarks', 'like', '%' . $request->name . '%')
                 ->orWhere('employees.name', 'like', '%' . $request->name . '%');
             });
     
