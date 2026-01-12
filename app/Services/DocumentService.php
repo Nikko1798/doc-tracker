@@ -108,7 +108,7 @@ class DocumentService
     public function generateQr($document){
         $writer = new PngWriter();
         $qrCode = new QrCode(
-            data: route('document.get-document', $document->id),
+            data: route('document.document-view', $document->id),
             encoding: new Encoding('UTF-8'),
             errorCorrectionLevel: ErrorCorrectionLevel::High,
             size: 300,
