@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
             'flash' => fn () => [
                 'success' => session('success'),
                 'error'   => session('error'),
+                'generatedrRoute'   => session('generatedrRoute'),
             ],
             'documentStatus' => fn () => Codetable::where('codename', 'DOCUMENT-STATUS')->get()
         ]);

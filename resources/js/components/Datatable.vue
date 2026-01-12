@@ -1,5 +1,11 @@
+<style>
+    tr:hover{
+        cursor: pointer;
+        background-color: #d9dadb;
+    }
+</style>
 <script setup lang="ts">
-import { ref, computed, PropType, onMounted, watch  } from 'vue'
+import { ref, computed, PropType, onMounted, watch, toRaw  } from 'vue'
 import {
     Table,
   TableBody,
@@ -35,6 +41,10 @@ import { ArrowUpDown } from 'lucide-vue-next'
         itemsPerPage: { type: Number, default: 1 },
         eventName: { type: String, required: true }, // Unique event name for refreshing
         extraParams: { type: Object, default: () => ({}) }, // Accept additional parameters
+        rowDblClick: {
+            type: Function as PropType<(row: any) => void>,
+            required: false,
+        },
     });
     const isLoading=ref(false)
     const query = ref('');
@@ -127,6 +137,18 @@ import { ArrowUpDown } from 'lucide-vue-next'
         currentPage.value=page;
     })
    
+    // dynamic events
+    
+    function handleRowDblClick(row: any) {
+        console.log(toRaw(row))
+        if (props.rowDblClick) {
+            props.rowDblClick(row);
+        }
+    }
+    function click()
+    {
+        alert('ss')
+    }
 </script>
 
 <template>
@@ -172,9 +194,17 @@ import { ArrowUpDown } from 'lucide-vue-next'
                 </TableHeader>
 
                 <TableBody>
-                    <TableRow
+                    <TableRow v-if="filteredTableData.length<1">
+                        <td colspan="100%" class="">
+                            <div class="flex justify-center items-center h-24 w-full  font-semibold gap-2">
+                              <Search/>  No data available
+                            </div>
+                        </td>
+                    </TableRow>
+                    <TableRow v-else
                         v-for="(item, rowIndex) in filteredTableData"
-                        :key="rowIndex"
+                        :key="rowIndex" :id="item"
+                        v-on:dblclick="handleRowDblClick(item.subItems)"
                     >
                         <TableCell
                             v-for="(column, colIndex) in visibleColumns"

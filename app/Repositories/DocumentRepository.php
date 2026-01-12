@@ -45,6 +45,7 @@ class DocumentRepository
             'service_to_ncca'=> $request['service_to_ncca'],
             'concerned_party_or_supplier'=> $request['concerned_party_or_supplier'],
             'total_service_amount'=> $request['total_service_amount'],
+            'project_or_program'=>$request['title'],
         ]);
         return $documentDetail;
     }
@@ -66,6 +67,8 @@ class DocumentRepository
                 'document_details.document_id',
                 'document_details.ncca_end_user_id',
                 'document_details.office_concerned_id',
+                'document_details.concerned_party_or_supplier',
+                'document_details.service_to_ncca',
                 'document_details.other_details',
                 'document_details.project_or_program',
                 'document_details.authority_or_fund_source',
@@ -91,6 +94,7 @@ class DocumentRepository
                 ->orWhere('document_details.other_details', 'like', '%' . $request->name . '%')
                 ->orWhere('offices.name', 'like', '%' . $request->name . '%')
                 ->orWhere('document_types.name', 'like', '%' . $request->name . '%')
+                ->orWhere('document_details.remarks', 'like', '%' . $request->name . '%')
                 ->orWhere('employees.name', 'like', '%' . $request->name . '%');
             });
     
@@ -135,6 +139,7 @@ class DocumentRepository
                 ->orWhere('document_details.other_details', 'like', '%' . $request->name . '%')
                 ->orWhere('offices.name', 'like', '%' . $request->name . '%')
                 ->orWhere('document_types.name', 'like', '%' . $request->name . '%')
+                ->orWhere('document_details.remarks', 'like', '%' . $request->name . '%')
                 ->orWhere('employees.name', 'like', '%' . $request->name . '%');
             });
     

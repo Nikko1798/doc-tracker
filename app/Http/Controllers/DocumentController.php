@@ -17,6 +17,8 @@ use App\Models\Document;
 use App\Repositories\DocumentRepository;
 use App\Services\DocumentService;
 use App\Http\Requests\DocumentFormRequest;
+
+use Barryvdh\DomPDF\Facade\Pdf;
 class DocumentController extends Controller
 {
     //
@@ -40,6 +42,14 @@ class DocumentController extends Controller
             'employees'=>$employees,
         ]);
     } 
+    public function documentDetailView(Document $document){
+        $document=$document
+        ->with('document_detail', 'document_type', 'document_detail.ncca_end_user', 
+        'document_detail.office_concerned')->first();
+        return Inertia::render('document/DocumentViewPage', [
+            'document' => $document
+        ]);
+    }
     public function store(DocumentFormRequest $request){
        return $this->documentService->store($request);
     } 
@@ -63,4 +73,8 @@ class DocumentController extends Controller
     {
         return $this->documentRepository->getDocument($document);
     }
+    public function generateQr(Document $document){
+        return $this->documentService->generateQr($document);
+    }
+    
 }
