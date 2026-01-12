@@ -34,7 +34,7 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     
     $documentTypes=DocumentType::select('id', 'name')
-    ->where('isParent', false)->get();
+    ->where('isParent', 0)->get();
     $complexities=Codetable::where('codename', 'COMPLEXITY')->get();
     $offices=Office::all();
     $employees=Employee::all();
