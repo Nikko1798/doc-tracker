@@ -30,5 +30,13 @@ class AppServiceProvider extends ServiceProvider
             ],
             'documentStatus' => fn () => Codetable::where('codename', 'DOCUMENT-STATUS')->get()
         ]);
+
+          if ($this->app->environment('production')) {
+            Request::setTrustedProxies(
+                request()->getClientIp() ? [request()->getClientIp()] : [],
+                Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PROTO
+            );
+            URL::forceScheme('https');
+        }
     }
 }
