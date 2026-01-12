@@ -75,10 +75,14 @@ const props=defineProps({
         type: Object as PropType<Record<string, any>>,
         default: ()=>{}
     },
+    open: {
+        type: Boolean,
+        default: false,
+    },
 });
 const page = usePage() as any
 const successMessage = ref<string | null>(null)
-
+const emit = defineEmits(['update:open'])
 
 const defaultPlaceholder = today(getLocalTimeZone())
 const dateReceived = ref() as Ref<DateValue>
@@ -203,14 +207,23 @@ function fillForm(){
     form.total_service_amount=document.total_service_amount  ?? 0.00
 
 }
+   
+    watch(
+    () => props.rowData,
+    (val) => {
+        console.log(val)
+        if (val) fillForm()
+    },
+    { deep: true }
+    )
 </script>
     
     <template>
         
-      <Sheet>
-        <SheetTrigger @click="fillForm" >
+      <Sheet :open="props.open" @update:open="emit('update:open', $event)">
+        <!-- <SheetTrigger @click="fillForm" >
             <Button class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Update</Button>
-        </SheetTrigger>
+        </SheetTrigger> -->
         <SheetContent class="md:w-[45%] w-[95%] overflow-y-auto">
           <SheetHeader>
             <div class="grid p-5">
@@ -554,8 +567,9 @@ function fillForm(){
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-center ">
-                    <Button type="button" @click="submit" class="cursor-pointer">Submit</Button>
+                <div v-if="$page.props.auth.user" class="flex items-center justify-center space-x-4" >
+                <Button type="button" @click="submit" class="cursor-pointer">Submit</Button>
+                <Button type="button"  class="cursor-pointer">Generate QR</Button>
                 </div>
                 
             </Form>

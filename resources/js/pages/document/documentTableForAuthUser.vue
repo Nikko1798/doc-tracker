@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import Datatable from '@/components/Datatable.vue';
-    import { PropType, toRaw } from 'vue';
+    import { nextTick, onMounted, PropType, ref, toRaw } from 'vue';
     import { route } from 'ziggy-js';
     import Button from '@/components/ui/button/Button.vue';
     import { PlusIcon, PenBoxIcon, PenBox, QrCode } from 'lucide-vue-next';
@@ -54,6 +54,16 @@
         
         window.open(route('document.generateQr', id), '_blank')
     });
+    const isDrawerOpen = ref(false)
+    const selectedRow = ref<any>({})
+    const handleRowDblClick = (row: any) => {
+        selectedRow.value = row
+        isDrawerOpen.value = true
+        console.log(toRaw(selectedRow.value))
+    }
+    
+    
+    
     </script>
     
     <template>
@@ -66,13 +76,16 @@
         <Datatable :apiUrl="route('document.fetch-all-documents')" 
             :extraParams="{'document_type':props.documentType}"
             :tableHeaders="[]"
-            :visible-columns="['document_status', 'date_received', 'document_type', 'other_details', 
-            'title','authority_or_fund_source','ncca_end_user', 'office_concerned', 'control_number',
-            'date_time_ready', 'date_time_released', 'service_to_ncca', 'concerned_party_or_supplier',
+            :visible-columns="['document_status', 'date_received', 'document_type','title',
+             'concerned_party_or_supplier', 'service_to_ncca', 'authority_or_fund_source', 'ncca_end_user',
+            'other_details',
+             'office_concerned', 'control_number',
+            'date_time_ready', 'date_time_released', 'remarks',
             'total_service_amount', 'actions']" 
             :sortableColumns="['id', 'title', 'date_received' ]"
             :itemsPerPage="1"
             eventName="refresh-all-documents"
+            :rowDblClick="handleRowDblClick"
            >
              <template #header-document_status>
                 <div class="text-white">Document Status</div>
@@ -83,11 +96,14 @@
             <template #header-document_type>
                 <div class="text-white">Document type</div>
             </template>
-            <template #header-other_details>
-                <div class="text-white">Other details</div>
-            </template>
             <template #header-title>
                 <div class="text-white">Project/Program</div>
+            </template>
+             <template #header-concerned_party_or_supplier>
+                <div class="text-white">Concerned Party or Supplier</div>
+            </template>
+            <template #header-service_to_ncca>
+                <div class="text-white">Service to NCCA</div>
             </template>
             <template #header-authority_or_fund_source>
                 <div class="text-white">Authority/Fund Source</div>
@@ -95,6 +111,9 @@
             <template #header-ncca_end_user>
                 <div class="text-white">NCCA End user</div>
             </template> 
+            <template #header-other_details>
+                <div class="text-white">Other details</div>
+            </template>
             <template #header-office_concerned>
                 <div class="text-white">Office Concerned</div>
             </template> 
@@ -107,17 +126,11 @@
             <template #header-date_time_released>
                 <div class="text-white">Date released</div>
             </template>
-            
-            <template #header-service_to_ncca>
-                <div class="text-white">Service to NCCA</div>
-            </template>
-            
-            <template #header-concerned_party_or_supplier>
-                <div class="text-white">Concerned Party or Supplier</div>
-            </template>
-            
             <template #header-total_service_amount>
                 <div class="text-white">Total Service Amount</div>
+            </template>
+             <template #header-remarks>
+                <div class="text-white">Remarks</div>
             </template>
             <template #header-actions>
                 <div class="text-white">Action</div>
@@ -145,29 +158,29 @@
                     }}
                 </span>
             </template>
-            <template #cell-9="{ rowData }">
+            <template #cell-11="{ rowData }">
                 <span>
                     {{
-                        new Date(rowData.date_time_ready).toLocaleDateString('en-US', {
+                        rowData.date_time_ready ? new Date(rowData.date_time_ready).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
-                        })
+                        }) : ""
                     }}
                 </span>
             </template>
-            <template #cell-10="{ rowData }">
+            <template #cell-12="{ rowData }">
                 <span>
                     {{
-                        new Date(rowData.date_time_released).toLocaleDateString('en-US', {
+                        rowData.date_time_released ? new Date(rowData.date_time_released).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
-                        })
+                        }) : ""
                     }}
                 </span>
             </template>
-            <template #cell-13="{ rowData }">
+            <template #cell-14="{ rowData }">
                 <span>
                     {{
                         new Intl.NumberFormat('en-PH', {
@@ -177,15 +190,21 @@
                     }}
                 </span>
             </template>
-            <template #cell-14="{ rowData }">
-                <!-- <Button class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Edit</Button> -->
+            <template #cell-15="{ rowData }">
+                <div  class="flex items-center justify-center space-x-4" >
+                    <Button @click="generateQr(rowData.id)" class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><QrCode/> Generate QR</Button>
+                    <Button @click="handleRowDblClick(rowData)" " class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Update</Button>
+              
+                </div>
+                
                 <div class="space-x-2"> 
-                    <documentDrawerForm :rowData="rowData" :documentTypes="documentTypes" 
+                    <documentDrawerForm 
+                    v-model:open="isDrawerOpen"
+                    :rowData="selectedRow" :documentTypes="documentTypes" 
                     :complexities="complexities" :offices="offices" :employees="employees"></documentDrawerForm>
 
                    
-                    <Button @click="generateQr(rowData.id)" class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><QrCode/> Generate QR</Button>
-                   
+                    
                 </div>
             </template>
         </Datatable>

@@ -67,6 +67,8 @@ class DocumentRepository
                 'document_details.document_id',
                 'document_details.ncca_end_user_id',
                 'document_details.office_concerned_id',
+                'document_details.concerned_party_or_supplier',
+                'document_details.service_to_ncca',
                 'document_details.other_details',
                 'document_details.project_or_program',
                 'document_details.authority_or_fund_source',
