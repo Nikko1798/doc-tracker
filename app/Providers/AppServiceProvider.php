@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use App\Models\Codetable;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Http\Request;
+
 
 class AppServiceProvider extends ServiceProvider
 {
