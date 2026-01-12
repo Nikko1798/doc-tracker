@@ -16,8 +16,17 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
     else{
+        $documentTypes=DocumentType::select('id', 'name')
+        ->where('isParent', false)->get();
+        $complexities=Codetable::where('codename', 'COMPLEXITY')->get();
+        $offices=Office::all();
+        $employees=Employee::all();
         return Inertia::render('Welcome', [
             'canRegister' => Features::enabled(Features::registration()),
+            'documentTypes'=>$documentTypes,
+            'complexities' => $complexities,
+            'offices'=>$offices,
+            'employees'=>$employees,
         ]);
     }
 })->name('home');

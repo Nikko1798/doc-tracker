@@ -60,7 +60,7 @@ class DocumentRepository
     public function fetchPublicDocuments($request){
         $perPage = $request->input('perPage', 10); // Default to 10 per page
         $page = $request->input('page', 1); // Default page 1
-        $doc= Document::select('documents.id',
+        $doc= Document::select('documents.id', 'documents.document_type_id', 'documents.complexity_id',
                 'documents.date_received',
                 'documents.title',
                 'documents.control_number',
