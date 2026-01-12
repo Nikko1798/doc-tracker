@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 import documentTablePublic from './document/documentTablePublic.vue';
 import { usePage } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, PropType } from 'vue';
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -22,15 +22,30 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs'
 import { UserIcon, LayoutDashboardIcon } from 'lucide-vue-next';
-withDefaults(
-    defineProps<{
-        canRegister: boolean;
-    }>(),
-    {
-        canRegister: true,
-    },
-);
 
+const props=defineProps({
+    canRegister: {
+        type: Boolean,
+        default: true,
+    },
+    documentTypes:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    complexities:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    offices:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    employees:{
+        type: Array as PropType<Record<string, any>[]>,
+        default: ()=>[]
+    },
+    
+});
 </script>
 <style>
     .col-document_type, .col-other_details{
@@ -93,19 +108,25 @@ withDefaults(
                         Contracts
                     </TabsTrigger>
                 </TabsList>
-            <div class="flex-1 min-h-0">
+                <div class="flex-1 min-h-0">
                     <TabsContent
                         value="moa"
                         class="h-full overflow-y-auto overflow-x-hidden"
                     >
-                        <documentTablePublic :routeName="'document.fetch-public-documents'" :documentType="2"/>
+                        <documentTablePublic 
+                        :documentTypes="documentTypes" 
+        :complexities="complexities" :offices="offices" :employees="employees"
+                        :routeName="'document.fetch-public-documents'" :documentType="2"/>
                     </TabsContent>
 
                     <TabsContent
                         value="contracts"
                         class="h-full overflow-y-auto overflow-x-hidden"
                     >
-                        <documentTablePublic :routeName="'document.fetch-public-documents'" :documentType="1"/>
+                        <documentTablePublic
+                        :documentTypes="documentTypes" 
+        :complexities="complexities" :offices="offices" :employees="employees"
+                        :routeName="'document.fetch-public-documents'" :documentType="1"/>
                     </TabsContent>
                 </div>
             </Tabs>

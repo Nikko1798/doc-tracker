@@ -11,12 +11,19 @@ use App\Models\Employee;
 use App\Models\Document;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    if(Auth::user())
+    {
+        return redirect()->route('dashboard');
+    }
+    else{
+        return Inertia::render('Welcome', [
+            'canRegister' => Features::enabled(Features::registration()),
+        ]);
+    }
 })->name('home');
 
 Route::get('dashboard', function () {
+    
     $documentTypes=DocumentType::select('id', 'name')
     ->where('isParent', false)->get();
     $complexities=Codetable::where('codename', 'COMPLEXITY')->get();
