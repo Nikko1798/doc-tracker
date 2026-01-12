@@ -168,7 +168,7 @@ const submit = () => {
   form.post(route('document.store'),{
     onSuccess: ()=>{
         form.reset();
-        window.open(page.props.flash.generatedrRoute, '_blank')
+        // window.open(page.props.flash.generatedrRoute, '_blank')
        
     }
   })
