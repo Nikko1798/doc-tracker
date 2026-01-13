@@ -95,14 +95,15 @@ const df = new DateFormatter('en-US', {
 const NewEmployee=ref('');
 const NewOfficeName=ref('');
 
-const form = useForm<{ date_received: string | null, 
+const form = useForm<{ date_received: string | null, time_received: string | '', 
     document_type: number | null, title: string | '', control_number: string | '',
     complexity: number | null, other_details: string | '', person_claiming_or_remarks: string | '',authority_or_fund_source: string | '',
-    ncca_end_user: string | null, office_concerned: string | null, date_ready: string |null, date_released: string | null,
+    ncca_end_user: string | null, office_concerned: string | null, date_ready: string |null, date_released: string | null, time_released: string | '',
     service_to_ncca: string|'', concerned_party_or_supplier: string | '', total_service_amount: number | 0.00,
     NewEmployeeName: string|'', NewOfficeName: string|'' }>({
 
     date_received:  null,
+    time_received: '',
     document_type: null,
     title: '',
     control_number: '',
@@ -114,6 +115,7 @@ const form = useForm<{ date_received: string | null,
     office_concerned: null,
     date_ready: null,
     date_released: null,
+    time_released: '',
     service_to_ncca: '',
     concerned_party_or_supplier: '',
     total_service_amount: 0,
@@ -189,9 +191,10 @@ const submit = () => {
 function fillForm(){
     successMessage.value=null;
     const document=props.rowData
-    console.log(toRaw(document.document_type))
+    console.log(toRaw(document))
     form.document_type=document.document_type_id
     form.date_received=document.date_received
+    form.time_received=document.time_received
     form.title=document.title
     form.control_number=document.control_number
     form.complexity=document.complexity_id
@@ -202,6 +205,7 @@ function fillForm(){
     form.office_concerned=document.office_concerned_id
     form.date_ready=document.date_ready
     form.date_released=document.date_released
+    form.time_released=document.time_released
     form.service_to_ncca=document.service_to_ncca ?? ''
     form.concerned_party_or_supplier=document.concerned_party_or_supplier  ?? ''
     form.total_service_amount=document.total_service_amount  ?? 0.00
@@ -211,8 +215,9 @@ function fillForm(){
     watch(
     () => props.rowData,
     (val) => {
-        console.log(val)
         if (val) fillForm()
+        
+        console.log(toRaw(form.data()))
     },
     { deep: true }
     )
@@ -240,46 +245,55 @@ function fillForm(){
                 v-slot="{ errors, processing }">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 
-
-                    <div class="space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
                         <div class="space-y-2">
-                            <Label>Date received</Label>
-                            <div class="date_received_date">
-                                <Popover v-slot="{ close }" class="w-full">
-                                    <PopoverTrigger as-child>
-                                    <Button
-                                        variant="outline"
-                                        :class="cn('w-full justify-start text-left font-normal', !dateReceived && 'text-muted-foreground')"
-                                    >
-                                        <CalendarIcon />
-                                        {{ dateReceived ? df.format(dateReceived.toDate(getLocalTimeZone())) : 
-                                            (
-                                                rowData.date_received ?
-                                                new Date(rowData.date_received).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                })
-                                                 : "Pick a date" 
-                                            )
-                                        }}
-                                    </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent class="w-auto p-0" align="start">
-                                    <Calendar
-                                    
-                                        v-model="dateReceived"
-                                        :default-placeholder="defaultPlaceholder"
-                                        layout="month-and-year"
-                                        initial-focus
-                                        @update:model-value="close"
-                                    />
-                                    </PopoverContent>
-                                </Popover>
+                            <div class="space-y-2">
+                                <Label>Date received</Label>
+                                <div class="date_received_date">
+                                    <Popover v-slot="{ close }" class="w-full">
+                                        <PopoverTrigger as-child>
+                                        <Button
+                                            variant="outline"
+                                            :class="cn('w-full justify-start text-left font-normal', !dateReceived && 'text-muted-foreground')"
+                                        >
+                                            <CalendarIcon />
+                                            {{ dateReceived ? df.format(dateReceived.toDate(getLocalTimeZone())) : 
+                                                (
+                                                    rowData.date_received ?
+                                                    new Date(rowData.date_received).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                    })
+                                                    : "Pick a date" 
+                                                )
+                                            }}
+                                        </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent class="w-auto p-0" align="start">
+                                        <Calendar
+                                        
+                                            v-model="dateReceived"
+                                            :default-placeholder="defaultPlaceholder"
+                                            layout="month-and-year"
+                                            initial-focus
+                                            @update:model-value="close"
+                                        />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <InputError :message="form.errors.date_received"></InputError>
                             </div>
-                            <InputError :message="form.errors.date_received"></InputError>
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label>Time received</Label>
+                            <Input type="time"  v-model="form.time_received"
+                            id="time_received" name="time_received" placeholder="enter time received here...."/>
+                            <InputError :message="form.errors.time_received"></InputError>
                         </div>
                     </div>
+                   
                     
                     <div class="space-y-2">
                         <Label>Document type</Label>
@@ -413,7 +427,95 @@ function fillForm(){
                         placeholder="enter NCCA end user here...."/> -->
                     </div>
                 </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div class="space-y-2 grid grid-cols-1 gap-2">
+                        <div class="space-y-2">
+                            <Label>Date ready</Label>
+                            <div class="date_ready_div">
+                                <Popover v-slot="{ close }" class="w-full">
+                                    <PopoverTrigger as-child>
+                                    <Button
+                                        variant="outline"
+                                        :class="cn('w-full justify-start text-left font-normal', !dateReady && 'text-muted-foreground')"
+                                    >
+                                        <CalendarIcon />
+                                        <!-- {{ dateReady ? df.format(dateReady.toDate(getLocalTimeZone())) : "Pick a date" }} -->
+                                        {{ dateReady ? df.format(dateReady.toDate(getLocalTimeZone())) : 
+                                            (
+                                                rowData.date_ready ?
+                                                new Date(rowData.date_ready).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                })
+                                                 : "Pick a date" 
+                                            )
+                                        }}
+                                    </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent class="w-auto p-0" align="start">
+                                    <Calendar
+                                        v-model="dateReady"
+                                        :default-placeholder="defaultPlaceholder"
+                                        layout="month-and-year"
+                                        initial-focus
+                                        @update:model-value="close"
+                                    />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <InputError :message="form.errors.date_ready"></InputError>
+                        </div>
+                    </div>
 
+                    <div class="space-y-2 grid grid-cols-2 gap-2">
+                        <div class="space-y-2">
+                            <Label>Date released</Label>
+                            <div class="date_released_div">
+                                <Popover v-slot="{ close }" class="w-full">
+                                    <PopoverTrigger as-child>
+                                    <Button
+                                        variant="outline"
+                                        :class="cn('w-full justify-start text-left font-normal', !dateReleased && 'text-muted-foreground')"
+                                    >
+                                        <CalendarIcon />
+                                        <!-- {{ dateReleased ? df.format(dateReleased.toDate(getLocalTimeZone())) : "Pick a date" }} -->
+                                        {{ dateReleased ? df.format(dateReleased.toDate(getLocalTimeZone())) : 
+                                            (
+                                                rowData.date_released ?
+                                                new Date(rowData.date_released).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                })
+                                                 : "Pick a date" 
+                                            )
+                                        }}
+                                    </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent class="w-auto p-0" align="start">
+                                    <Calendar
+                                        v-model="dateReleased"
+                                        :default-placeholder="defaultPlaceholder"
+                                        layout="month-and-year"
+                                        initial-focus
+                                        @update:model-value="close"
+                                    />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <InputError :message="form.errors.date_released"></InputError>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <Label>Time released</Label>
+                            <Input v-model="form.time_released" type="time" id="time_released" name="time_released"
+                            placeholder="Pick a time"/>
+                            <InputError :message="form.errors.time_released"></InputError>
+                        </div>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-[50%_25%_25%] gap-2">
                     <div class="space-y-2">
                         <Label>Office Concerned</Label>
@@ -465,85 +567,7 @@ function fillForm(){
                         <InputError :message="form.errors.office_concerned"></InputError>
                     </div>
 
-                    <div class="space-y-2">
-                        <div class="space-y-2">
-                            <Label>Date ready</Label>
-                            <div class="date_received_div">
-                                <Popover v-slot="{ close }" class="w-full">
-                                    <PopoverTrigger as-child>
-                                    <Button
-                                        variant="outline"
-                                        :class="cn('w-full justify-start text-left font-normal', !dateReady && 'text-muted-foreground')"
-                                    >
-                                        <CalendarIcon />
-                                        <!-- {{ dateReady ? df.format(dateReady.toDate(getLocalTimeZone())) : "Pick a date" }} -->
-                                        {{ dateReady ? df.format(dateReady.toDate(getLocalTimeZone())) : 
-                                            (
-                                                rowData.date_time_ready ?
-                                                new Date(rowData.date_time_ready).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                })
-                                                 : "Pick a date" 
-                                            )
-                                        }}
-                                    </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent class="w-auto p-0" align="start">
-                                    <Calendar
-                                        v-model="dateReady"
-                                        :default-placeholder="defaultPlaceholder"
-                                        layout="month-and-year"
-                                        initial-focus
-                                        @update:model-value="close"
-                                    />
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-                            <InputError :message="form.errors.date_received"></InputError>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="space-y-2">
-                            <Label>Date released</Label>
-                            <div class="date_released_div">
-                                <Popover v-slot="{ close }" class="w-full">
-                                    <PopoverTrigger as-child>
-                                    <Button
-                                        variant="outline"
-                                        :class="cn('w-full justify-start text-left font-normal', !dateReleased && 'text-muted-foreground')"
-                                    >
-                                        <CalendarIcon />
-                                        <!-- {{ dateReleased ? df.format(dateReleased.toDate(getLocalTimeZone())) : "Pick a date" }} -->
-                                        {{ dateReleased ? df.format(dateReleased.toDate(getLocalTimeZone())) : 
-                                            (
-                                                rowData.date_time_released ?
-                                                new Date(rowData.date_time_released).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                })
-                                                 : "Pick a date" 
-                                            )
-                                        }}
-                                    </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent class="w-auto p-0" align="start">
-                                    <Calendar
-                                        v-model="dateReleased"
-                                        :default-placeholder="defaultPlaceholder"
-                                        layout="month-and-year"
-                                        initial-focus
-                                        @update:model-value="close"
-                                    />
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-                            <InputError :message="form.errors.date_released"></InputError>
-                        </div>
-                    </div>
+                    
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">

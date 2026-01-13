@@ -76,14 +76,15 @@ const df = new DateFormatter('en-US', {
 const NewEmployee=ref('');
 const NewOfficeName=ref('');
 
-const form = useForm<{ date_received: string | null, 
+const form = useForm<{ date_received: string | null, time_received: string|'',
     document_type: number | null, title: string | '', control_number: string | '',
     complexity: number | null, other_details: string | '', person_claiming_or_remarks: string | '',authority_or_fund_source: string | '',
-    ncca_end_user: string | null, office_concerned: string | null, date_ready: string |null, date_released: string | null,
+    ncca_end_user: string | null, office_concerned: string | null, date_ready: string |null, date_released: string | null, time_released: string | '',
     service_to_ncca: string|'', concerned_party_or_supplier: string | '', total_service_amount: number | 0.00,
     NewEmployeeName: string|'', NewOfficeName: string|'' }>({
 
     date_received:  null,
+    time_received: '',
     document_type: null,
     title: '',
     control_number: '',
@@ -95,6 +96,7 @@ const form = useForm<{ date_received: string | null,
     office_concerned: null,
     date_ready: null,
     date_released: null,
+    time_released: '',
     service_to_ncca: '',
     concerned_party_or_supplier: '',
     total_service_amount: 0.00,
@@ -191,36 +193,43 @@ function test(){
     v-slot="{ errors, processing }">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
         
-
-            <div class="space-y-2">
+            
+            <div class="grid grid-cols-2 gap-2">
                 <div class="space-y-2">
-                    <Label>Date received</Label>
-                    <div class="date_received_date">
-                        <Popover v-slot="{ close }" class="w-full">
-                            <PopoverTrigger as-child>
-                            <Button
-                                variant="outline"
-                                :class="cn('w-full justify-start text-left font-normal', !dateReceived && 'text-muted-foreground')"
-                            >
-                                <CalendarIcon />
-                                {{ dateReceived ? df.format(dateReceived.toDate(getLocalTimeZone())) : "Pick a date" }}
-                            </Button>
-                            </PopoverTrigger>
-                            <PopoverContent class="w-auto p-0" align="start">
-                            <Calendar
-                                v-model="dateReceived"
-                                :default-placeholder="defaultPlaceholder"
-                                layout="month-and-year"
-                                initial-focus
-                                @update:model-value="close"
-                            />
-                            </PopoverContent>
-                        </Popover>
+                    <div class="space-y-2">
+                        <Label>Date received</Label>
+                        <div class="date_received_date">
+                            <Popover v-slot="{ close }" class="w-full">
+                                <PopoverTrigger as-child>
+                                <Button
+                                    variant="outline"
+                                    :class="cn('w-full justify-start text-left font-normal', !dateReceived && 'text-muted-foreground')"
+                                >
+                                    <CalendarIcon />
+                                    {{ dateReceived ? df.format(dateReceived.toDate(getLocalTimeZone())) : "Pick a date" }}
+                                </Button>
+                                </PopoverTrigger>
+                                <PopoverContent class="w-auto p-0" align="start">
+                                <Calendar
+                                    v-model="dateReceived"
+                                    :default-placeholder="defaultPlaceholder"
+                                    layout="month-and-year"
+                                    initial-focus
+                                    @update:model-value="close"
+                                />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <InputError :message="form.errors.date_received"></InputError>
                     </div>
-                    <InputError :message="form.errors.date_received"></InputError>
+                </div>
+                <div class="space-y-2">
+                    <Label>Time received</Label>
+                    <Input type="time"  v-model="form.time_received"
+                    id="time_received" name="time_received" placeholder="enter time received here...."/>
+                <InputError :message="form.errors.time_received"></InputError>
                 </div>
             </div>
-            
             <div class="space-y-2">
                 <Label>Document type</Label>
                 
@@ -294,10 +303,53 @@ function test(){
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div class="space-y-2">
-                <Label>Authority/Fund Source</Label>
-                <Input type="text" v-model="form.authority_or_fund_source" id="authority_or_fund_source" name="authority_or_fund_source"
-                 placeholder="enter authority or fund source here...."/>
-                 <InputError :message="form.errors.authority_or_fund_source"></InputError>
+                <Label>Office Concerned</Label>
+                <div class="office_concerned_div">
+                    <Popover v-model:open="officeOpen">
+                        <PopoverTrigger as-child>
+                        <Button
+                            variant="outline"
+                            role="combobox"
+                            :aria-expanded="officeOpen"
+                            class="w-full justify-between"
+                        >
+                            {{ selectedOffice?.name || (form.NewOfficeName ? form.NewOfficeName : "Office...") }}
+                            <ChevronsUpDownIcon class="opacity-50" />
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent class="w-full p-0">
+                        <Command>
+                            <CommandInput class="h-9" placeholder="Search office..." v-model="NewOfficeName" />
+                            <CommandList>
+                            <CommandEmpty>
+                                <Badge @click="selectNewOffice" class="bg-blue-500 w-full hover:cursor-pointer hover:bg-blue-800">
+                                    Add this to the list
+                                </Badge>
+                            </CommandEmpty>
+                            <CommandGroup>
+                                <CommandItem
+                                v-for="office in props.offices"
+                                :key="office.id"
+                                :value="office.id"
+                                @select="(ev) => {
+                                    selectOffice(ev.detail.value as string)
+                                }"
+                                >
+                                {{ office.name }}
+                                <CheckIcon
+                                    :class="cn(
+                                    'ml-auto',
+                                    form.office_concerned === office.id ? 'opacity-100' : 'opacity-0',
+                                    )"
+                                />
+                                </CommandItem>
+                            </CommandGroup>
+                            </CommandList>
+                        </Command>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                <InputError :message="form.errors.office_concerned"></InputError>
             </div>
 
             <div class="space-y-2">
@@ -354,58 +406,8 @@ function test(){
             </div>
         </div>
 
-         <div class="grid grid-cols-1 md:grid-cols-[50%_25%_25%] gap-2">
-            <div class="space-y-2">
-                <Label>Office Concerned</Label>
-                <div class="office_concerned_div">
-                    <Popover v-model:open="officeOpen">
-                        <PopoverTrigger as-child>
-                        <Button
-                            variant="outline"
-                            role="combobox"
-                            :aria-expanded="officeOpen"
-                            class="w-full justify-between"
-                        >
-                            {{ selectedOffice?.name || (form.NewOfficeName ? form.NewOfficeName : "Office...") }}
-                            <ChevronsUpDownIcon class="opacity-50" />
-                        </Button>
-                        </PopoverTrigger>
-                        <PopoverContent class="w-full p-0">
-                        <Command>
-                            <CommandInput class="h-9" placeholder="Search office..." v-model="NewOfficeName" />
-                            <CommandList>
-                            <CommandEmpty>
-                                <Badge @click="selectNewOffice" class="bg-blue-500 w-full hover:cursor-pointer hover:bg-blue-800">
-                                    Add this to the list
-                                </Badge>
-                            </CommandEmpty>
-                            <CommandGroup>
-                                <CommandItem
-                                v-for="office in props.offices"
-                                :key="office.id"
-                                :value="office.id"
-                                @select="(ev) => {
-                                    selectOffice(ev.detail.value as string)
-                                }"
-                                >
-                                {{ office.name }}
-                                <CheckIcon
-                                    :class="cn(
-                                    'ml-auto',
-                                    form.office_concerned === office.id ? 'opacity-100' : 'opacity-0',
-                                    )"
-                                />
-                                </CommandItem>
-                            </CommandGroup>
-                            </CommandList>
-                        </Command>
-                        </PopoverContent>
-                    </Popover>
-                </div>
-                <InputError :message="form.errors.office_concerned"></InputError>
-            </div>
-
-            <div class="space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="space-y-2 grid grid-cols-1 gap-2">
                 <div class="space-y-2">
                     <Label>Date ready</Label>
                     <div class="date_received_div">
@@ -430,11 +432,12 @@ function test(){
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <InputError :message="form.errors.date_received"></InputError>
+                    <InputError :message="form.errors.date_ready"></InputError>
                 </div>
             </div>
+            
 
-            <div class="space-y-2">
+            <div class="space-y-2 grid grid-cols-2 gap-2">
                 <div class="space-y-2">
                     <Label>Date released</Label>
                     <div class="date_released_div">
@@ -461,25 +464,40 @@ function test(){
                     </div>
                     <InputError :message="form.errors.date_released"></InputError>
                 </div>
+                <div class="space-y-2">
+                    <Label>Time released</Label>
+                    <Input type="time" id="time_released"
+                     name="time_released"
+                    placeholder="enter time released here...."
+                    v-model="form.time_released"/>
+                    <InputError :message="form.errors.time_released"></InputError>
+                </div>
             </div>
         </div>
-           
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div class="space-y-2">
+                <Label>Authority/Fund Source</Label>
+                <Input type="text" v-model="form.authority_or_fund_source" id="authority_or_fund_source" name="authority_or_fund_source"
+                 placeholder="enter authority or fund source here...."/>
+                 <InputError :message="form.errors.authority_or_fund_source"></InputError>
+            </div>
+             <div class="space-y-2">
                 <Label>Service to NCCA</Label>
                 <Input type="text" v-model="form.service_to_ncca" id="service_to_ncca" name="service_to_ncca"
                  placeholder="enter service to ncca here...."/>
                  <InputError :message="form.errors.service_to_ncca"></InputError>
             </div>
+        </div>
+           
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+           
             <div class="space-y-2">
                 <Label>Concerned Party/Supplier</Label>
                 <Input type="text" v-model="form.concerned_party_or_supplier" id="concerned_party_or_supplier" name="concerned_party_or_supplier"
                  placeholder="enter concerned party or supplier here...."/>
                  <InputError :message="form.errors.concerned_party_or_supplier"></InputError>
             </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div class="space-y-2">
                 <Label>Total Service Amount (Php.)</Label>
                 <Input type="number" v-model="form.total_service_amount" id="total_service_amount" name="total_service_amount"
@@ -488,7 +506,7 @@ function test(){
             </div>
         </div>
         
-        <div class="flex items-center justify-center ">
+        <div class="flex items-center justify-center mt-15 mb-10">
             <Button type="submit" class="cursor-pointer">Submit</Button>
         </div>
         
