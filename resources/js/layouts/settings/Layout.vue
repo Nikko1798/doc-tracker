@@ -10,6 +10,7 @@ import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import DocumentTypeForm from '@/pages/settings/DocumentTypeForm.vue';
 const sidebarNavItems = [
     {
         title: 'Profile',
@@ -57,6 +58,7 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
                             {{ item.title }}
                         </Link>
                     </Button>
+                   <DocumentTypeForm/>
                 </nav>
             </aside>
 
