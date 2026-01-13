@@ -19,8 +19,9 @@ return new class extends Migration
             $table->text('other_details')->nullable();
             $table->string('project_or_program')->nullable();
             $table->string('authority_or_fund_source')->nullable();
-            $table->dateTime('date_time_ready')->nullable();
-            $table->dateTime('date_time_released')->nullable();
+            $table->date('date_ready')->nullable();
+            $table->date('date_released')->nullable();
+            $table->time('time_released')->nullable();
             $table->text('remarks')->nullable();
             $table->text('service_to_ncca')->nullable();
             $table->text('concerned_party_or_supplier')->nullable();

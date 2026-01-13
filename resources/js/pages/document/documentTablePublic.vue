@@ -49,11 +49,11 @@ const props=defineProps({
    <Datatable :apiUrl="route(props.routeName)" 
         :extraParams="{'document_type':props.documentType}"
         :tableHeaders="[]"
-        :visible-columns="['document_status', 'date_received', 'document_type', 'title', 
+        :visible-columns="['document_status', 'date_received', 'time_received', 'document_type', 'title', 
         'concerned_party_or_supplier', 'service_to_ncca', 'authority_or_fund_source',
         'ncca_end_user','other_details', 
          'office_concerned', 'control_number', 
-        'date_time_ready', 'date_time_released', 'remarks', 'actions']" 
+        'date_ready', 'date_released', 'time_released', 'remarks', 'actions']" 
         :sortableColumns="['title', 'date_received' ]"
         :itemsPerPage="1"
         eventName="refresh-public-documents"
@@ -64,6 +64,9 @@ const props=defineProps({
         </template>
         <template #header-date_received>
             <div class="text-white">Date Received</div>
+        </template>
+         <template #header-time_received>
+            <div class="text-white">Time Received</div>
         </template>
         <template #header-document_type>
             <div class="text-white">Document type</div>
@@ -92,11 +95,14 @@ const props=defineProps({
         <template #header-control_number>
             <div class="text-white">Control number</div>
         </template>
-        <template #header-date_time_ready>
+        <template #header-date_ready>
             <div class="text-white">Date ready</div>
         </template>
-        <template #header-date_time_released>
+        <template #header-date_released>
             <div class="text-white">Date released</div>
+        </template>
+         <template #header-time_released>
+            <div class="text-white">Time released</div>
         </template>
         <template #header-remarks>
             <div class="text-white">Person claiming/Remarks</div>
@@ -110,9 +116,65 @@ const props=defineProps({
                 {{ rowData.document_status ? rowData.document_status : "N/A" }}
             </Badge>
         </template>
-        <template #cell-14="{ rowData }">
+         <template #cell-1="{ rowData }">
+                <span>
+                    {{
+                        rowData.date_received ? new Date(rowData.date_received + 'T00:00:00').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        }) : ""
+                    }}
+                </span>
+            </template>
+        <template #cell-2="{rowData}">
+            {{
+                rowData.time_received
+                    ? new Date(`1970-01-01T${rowData.time_received}`).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
+                    })
+                : ""
+            }}
+        </template>
+         <template #cell-12="{ rowData }">
+                <span>
+                    {{
+                        rowData.date_ready ? new Date(rowData.date_ready + 'T00:00:00').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        }) : ""
+                    }}
+                </span>
+            </template>
+         <template #cell-13="{ rowData }">
+                <span>
+                    {{
+                        rowData.date_released ? new Date(rowData.date_released + 'T00:00:00').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        }) : ""
+                    }}
+                </span>
+            </template>
+        <template #cell-14="{rowData}">
+            {{
+                rowData.time_released
+                    ? new Date(`1970-01-01T${rowData.time_released}`).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
+                    })
+                : ""
+            }}
+        </template>
+        <template #cell-16="{ rowData }">
             <div  class="flex items-center justify-center space-x-4" >
-                <Button @click="handleRowDblClick(rowData)"  class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> View</Button>
+                <Button @click="handleRowDblClick(rowData)"  
+                class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> View</Button>
             
             </div>
             
@@ -121,31 +183,8 @@ const props=defineProps({
                 v-model:open="isDrawerOpen"
                 :rowData="selectedRow" :documentTypes="documentTypes" 
                 :complexities="complexities" :offices="offices" :employees="employees"></documentDrawerForm>
-
-                
-                
             </div>
         </template>
-            <!-- <div class="space-y-2 space-x-2">
-                <ProductMasterlistForm 
-                    :transaction="'update'"
-                    :dialogButtonText="'Update Product'" 
-                    :dialogTitle="'Update this Product'"
-                    
-                    :categoryData="toRaw(category)"
-                    :brandData="toRaw(brands)"
-                    :productData="rowData">
-                        <template #triggerButton>
-                            <Button variant="outline">
-                                <SquarePen class="hover:bg-secondary hover:opacity-80 hover:text-white cursor-pointer w-4 h-4" />
-                            </Button>
-                        </template>
-                </ProductMasterlistForm>
-                <Button size="icon" variant="outline">
-                    <Trash class="hover:bg-secondary hover:opacity-80 hover:text-white cursor-pointer w-4 h-4" />
-                </Button>
-            </div> -->
-        <!-- </template> -->
            
     </Datatable>
 </template>

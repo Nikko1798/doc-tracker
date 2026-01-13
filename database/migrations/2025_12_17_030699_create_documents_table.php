@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('complexity_id')->nullable()->constrained('codetables');
             $table->foreignId('document_type_id')->nullable()->constrained('document_types');
             $table->date('date_received')->nullable();
+            $table->time('time_received')->nullable();
             $table->text('title')->nullable();
             $table->string('control_number')->nullable();
             $table->timestamps();

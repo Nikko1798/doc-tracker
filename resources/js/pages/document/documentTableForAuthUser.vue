@@ -76,11 +76,13 @@
         <Datatable :apiUrl="route('document.fetch-all-documents')" 
             :extraParams="{'document_type':props.documentType}"
             :tableHeaders="[]"
-            :visible-columns="['document_status', 'date_received', 'document_type','title',
-             'concerned_party_or_supplier', 'service_to_ncca', 'authority_or_fund_source', 'ncca_end_user',
+            :visible-columns="['document_status', 'date_received', 'time_received',
+            'document_type','title',
+            'concerned_party_or_supplier', 
+            'service_to_ncca', 'authority_or_fund_source', 'ncca_end_user',
             'other_details',
-             'office_concerned', 'control_number',
-            'date_time_ready', 'date_time_released', 'remarks',
+            'office_concerned', 'control_number',
+            'date_ready', 'date_released', 'time_released', 'remarks',
             'total_service_amount', 'actions']" 
             :sortableColumns="['id', 'title', 'date_received' ]"
             :itemsPerPage="1"
@@ -92,6 +94,9 @@
             </template>
             <template #header-date_received>
                 <div class="text-white">Date Received</div>
+            </template>
+            <template #header-time_received>
+                <div class="text-white">Time Received</div>
             </template>
             <template #header-document_type>
                 <div class="text-white">Document type</div>
@@ -120,11 +125,14 @@
             <template #header-control_number>
                 <div class="text-white">Control number</div>
             </template>
-            <template #header-date_time_ready>
+            <template #header-date_ready>
                 <div class="text-white">Date ready</div>
             </template>
-            <template #header-date_time_released>
+            <template #header-date_released>
                 <div class="text-white">Date released</div>
+            </template>
+            <template #header-time_released>
+                <div class="text-white">Time released</div>
             </template>
             <template #header-total_service_amount>
                 <div class="text-white">Total Service Amount</div>
@@ -150,21 +158,67 @@
             <template #cell-1="{ rowData }">
                 <span>
                     {{
-                        new Date(rowData.date_received + 'T00:00:00').toLocaleDateString('en-US', {
+                        rowData.date_received ? new Date(rowData.date_received + 'T00:00:00').toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
-                        })
+                        }) : ""
                     }}
                 </span>
             </template>
-            <template #cell-11="{ rowData }">
+            <template #cell-2="{rowData}">
+                {{
+                    rowData.time_received
+                        ? new Date(`1970-01-01T${rowData.time_received}`).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true,
+                        })
+                    : ""
+                }}
+            </template>
+            <template #cell-12="{ rowData }">
+                <span>
+                    {{
+                        rowData.date_ready ? new Date(rowData.date_ready + 'T00:00:00').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        }) : ""
+                    }}
+                </span>
+            </template>
+            <template #cell-13="{ rowData }">
+                <span>
+                    {{
+                        rowData.date_released ? new Date(rowData.date_released + 'T00:00:00').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        }) : ""
+                    }}
+                </span>
+            </template>
+            <template #cell-14="{rowData}">
+                {{
+                    rowData.time_released
+                        ? new Date(`1970-01-01T${rowData.time_released}`).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true,
+                        })
+                    : ""
+                }}
+            </template>
+            <!-- <template #cell-11="{ rowData }">
                 <span>
                     {{
                         rowData.date_time_ready ? new Date(rowData.date_time_ready).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
                         }) : ""
                     }}
                 </span>
@@ -176,11 +230,15 @@
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false // optional, use 24-hour format
                         }) : ""
                     }}
                 </span>
-            </template>
-            <template #cell-14="{ rowData }">
+            </template> -->
+            
+            <template #cell-16="{ rowData }">
                 <span>
                     {{
                         new Intl.NumberFormat('en-PH', {
@@ -190,7 +248,7 @@
                     }}
                 </span>
             </template>
-            <template #cell-15="{ rowData }">
+            <template #cell-17="{ rowData }">
                 <div  class="flex items-center justify-center space-x-4" >
                     <Button @click="generateQr(rowData.id)" class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><QrCode/> Generate QR</Button>
                     <Button @click="handleRowDblClick(rowData)" " class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Update</Button>
