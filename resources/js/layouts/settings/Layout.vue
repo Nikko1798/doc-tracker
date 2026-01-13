@@ -9,24 +9,24 @@ import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-
-const sidebarNavItems: NavItem[] = [
+import { route } from 'ziggy-js';
+const sidebarNavItems = [
     {
         title: 'Profile',
-        href: editProfile(),
+        href: 'profile.edit',
     },
     {
         title: 'Password',
-        href: editPassword(),
+        href: 'user-password.edit',
     },
-    {
-        title: 'Two-Factor Auth',
-        href: show(),
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-    },
+    // {
+    //     title: 'Two-Factor Auth',
+    //     href: 'two-factor.show',
+    // },
+    // {
+    //     title: 'Appearance',
+    //     href: 'profile.edit',
+    // },
 ];
 
 const currentPath = typeof window !== undefined ? window.location.pathname : '';
@@ -52,8 +52,8 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
                         ]"
                         as-child
                     >
-                        <Link :href="item.href">
-                            <component :is="item.icon" class="h-4 w-4" />
+                        <Link :href="route(item.href)">
+                            <!-- <component :is="item.icon" class="h-4 w-4" /> -->
                             {{ item.title }}
                         </Link>
                     </Button>

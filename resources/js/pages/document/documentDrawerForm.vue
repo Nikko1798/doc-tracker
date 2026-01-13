@@ -216,6 +216,10 @@ function fillForm(){
     },
     { deep: true }
     )
+    const generateQr=((id: number)=>{
+        
+        window.open(route('document.generateQr', id), '_blank')
+    });
 </script>
     
     <template>
@@ -569,7 +573,7 @@ function fillForm(){
                 
                 <div v-if="$page.props.auth.user" class="flex items-center justify-center space-x-4" >
                 <Button type="button" @click="submit" class="cursor-pointer">Submit</Button>
-                <Button type="button"  class="cursor-pointer">Generate QR</Button>
+                <Button type="button" @click="generateQr(rowData.id)" class="cursor-pointer">Generate QR</Button>
                 </div>
                 
             </Form>

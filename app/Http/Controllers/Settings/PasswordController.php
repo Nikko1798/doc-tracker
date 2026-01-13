@@ -33,6 +33,8 @@ class PasswordController extends Controller
             'password' => $validated['password'],
         ]);
 
-        return back();
+        // return back();
+        return redirect()->back()
+                ->with('success', 'Password Updated successfully');
     }
 }
