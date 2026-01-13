@@ -15,7 +15,9 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { email } from '@/routes/password';
 import { route } from 'ziggy-js';
-import { LoaderCircle } from 'lucide-vue-next';
+import { CheckCheck, CheckIcon, LoaderCircle } from 'lucide-vue-next';
+import AlertTitle from '@/components/ui/alert/AlertTitle.vue';
+import Alert from '@/components/ui/alert/Alert.vue';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -31,7 +33,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const page = usePage();
+const page = usePage() as any;
 const user = page.props.auth.user;
 const form=useForm({
     name: user.name,
@@ -46,11 +48,17 @@ const form=useForm({
 
         <SettingsLayout>
             <div class="flex flex-col space-y-6">
+                <div v-if="page.props.flash.success" class="grid">
+                    <Alert  class="bg-green-800 text-white">
+                        <CheckCheck ></CheckCheck>
+                        <AlertTitle >{{ page.props.flash.success }}</AlertTitle>
+                    </Alert>
+                </div>
                 <HeadingSmall
                     title="Profile information"
                     description="Update your name and email address"
                 />
-
+                
                 <Form
                     :action="route('profile.update')"
                     method="PATCH"

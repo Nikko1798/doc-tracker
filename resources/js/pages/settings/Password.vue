@@ -4,7 +4,7 @@ import InputError from '@/components/InputError.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/user-password';
-import { Form, Head, useForm } from '@inertiajs/vue3';
+import { Form, Head, useForm, usePage } from '@inertiajs/vue3';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
 import { route } from 'ziggy-js';
-import { LoaderCircle } from 'lucide-vue-next';
+import { CheckCheck, LoaderCircle } from 'lucide-vue-next';
+import Alert from '@/components/ui/alert/Alert.vue';
+import AlertTitle from '@/components/ui/alert/AlertTitle.vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -25,6 +27,7 @@ const form=useForm({
     'password_confirmation': '',
     'current_password': '',
 })
+const page=usePage() as any;
 </script>
 
 <template>
@@ -33,17 +36,23 @@ const form=useForm({
 
         <SettingsLayout>
             <div class="space-y-6">
+                <div v-if="page.props.flash.success" class="grid">
+                    <Alert  class="bg-green-800 text-white">
+                        <CheckCheck ></CheckCheck>
+                        <AlertTitle >{{ page.props.flash.success }}</AlertTitle>
+                    </Alert>
+                </div>
                 <HeadingSmall
                     title="Update password"
                     description="Ensure your account is using a long, random password to stay secure"
                 />
-            <Form
-                :action="route('user-password.update')"
-                method="PUT"
-                :reset-on-error="['password', 'password_confirmation', 'current_password']"
-                v-slot="{ errors, processing }"
-                class="flex flex-col gap-6"
-            >
+                <Form
+                    :action="route('user-password.update')"
+                    method="PUT"
+                    :reset-on-error="['password', 'password_confirmation', 'current_password']"
+                    v-slot="{ errors, processing }"
+                    class="flex flex-col gap-6"
+                >
                     <div class="grid gap-2">
                         <Label for="current_password">Current password</Label>
                         <Input
