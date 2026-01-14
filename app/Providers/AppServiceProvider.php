@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use App\Models\Codetable;
+use App\Models\DocumentType;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 
@@ -31,7 +32,8 @@ class AppServiceProvider extends ServiceProvider
                 'error'   => session('error'),
                 'generatedrRoute'   => session('generatedrRoute'),
             ],
-            'documentStatus' => fn () => Codetable::where('codename', 'DOCUMENT-STATUS')->get()
+            'documentStatus' => fn () => Codetable::where('codename', 'DOCUMENT-STATUS')->get(),
+            'parentDocumentTypes' => fn () => DocumentType::where('isParent', 1)->get()
         ]);
 
           if ($this->app->environment('production')) {
