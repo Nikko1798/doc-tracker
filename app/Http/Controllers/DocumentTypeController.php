@@ -14,7 +14,7 @@ class DocumentTypeController extends Controller
     }
     public function storeChildDocumentType(Request $request)
     {
-        $docType=$this->docTypeRepository->parentDoctype($request);
+        $docType=$this->docTypeRepository->storeChildDocumentType($request);
         return redirect()->back()->with('success', 'The document type has been added successfully.');
     }
 }

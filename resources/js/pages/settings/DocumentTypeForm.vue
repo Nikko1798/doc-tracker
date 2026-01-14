@@ -24,29 +24,44 @@ import { Label } from '@/components/ui/label'
 import { Form, useForm, usePage } from '@inertiajs/vue3';
 import { route } from 'ziggy-js'
 import Alert from '@/components/ui/alert/Alert.vue'
-import { CheckCheck, LoaderCircle } from 'lucide-vue-next'
+import { CheckCheck, LoaderCircle, LoaderCircleIcon } from 'lucide-vue-next'
 import AlertTitle from '@/components/ui/alert/AlertTitle.vue'
-
+import axios from 'axios'
+import { toast } from 'vue-sonner'
+import { Toaster } from 'vue-sonner'
+import { ref } from 'vue'
 const form=useForm({
     name: '',
     parentId: 1,
 })
 const page=usePage() as any;
+const isSubmitting=ref(false)
+const submit=( async ()=>{
+    if (isSubmitting.value) return // 🚫 block double submit
+
+    isSubmitting.value = true
+    await axios.post(route('doc-type.store-child'),form.data())
+    .then(response => {
+    toast.success('Submitted successfully');
+    form.reset()
+    isSubmitting.value = false
+    console.log(response.data)
+    })
+    .catch(error => {
+        alert('error')
+    console.error(error.response.data)
+    })
+})
 </script>
 
 <template>
-  <Dialog>
+    <Dialog>
       <DialogTrigger as-child>
         
         <Button variant="outline" class="w-full flex items-center justify-start cursor-pointer">
             New Document type
         </Button>
-      </DialogTrigger>
-        <Form    
-            :action="route('doc-type.store-child')"
-            method="POST"
-            v-slot="{ errors, processing }"
-            class="flex flex-col gap-6" >
+        </DialogTrigger>
             <DialogContent class="sm:max-w-[425px]">
                 <DialogHeader>
                 <DialogTitle>New Document tyoe</DialogTitle>
@@ -88,17 +103,18 @@ const page=usePage() as any;
                         </Button>
                     </DialogClose>
                     <Button
-                        type="submit"
+                        @click="submit"
+                        type="button"
                         class="mt-2 w-full"
                         tabindex="5"
-                        :disabled="processing"
                         data-test="register-user-button"
+                        :disabled="isSubmitting"
                     >
-                        <LoaderCircle v-if="processing" />
+                        <LoaderCircleIcon v-if="isSubmitting" />
                         Save
                     </Button>
                 </DialogFooter>
             </DialogContent>
-        </Form>
+       
   </Dialog>
 </template>

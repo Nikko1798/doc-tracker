@@ -11,6 +11,8 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 import DocumentTypeForm from '@/pages/settings/DocumentTypeForm.vue';
+import 'vue-sonner/style.css'
+import { Toaster } from '@/components/ui/sonner';
 const sidebarNavItems = [
     {
         title: 'Profile',
@@ -70,5 +72,6 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
                 </section>
             </div>
         </div>
+        <Toaster/>
     </div>
 </template>
