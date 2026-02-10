@@ -84,7 +84,7 @@
             'office_concerned', 'control_number',
             'date_ready', 'date_released', 'time_released', 'remarks',
             'total_service_amount', 'actions']" 
-            :sortableColumns="['id', 'title', 'date_received' ]"
+            :sortableColumns="['id', 'title', 'date_received','control_number' ]"
             :itemsPerPage="1"
             eventName="refresh-all-documents"
             :rowDblClick="handleRowDblClick"
