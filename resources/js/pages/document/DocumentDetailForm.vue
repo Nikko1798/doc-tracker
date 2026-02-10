@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DateValue } from '@internationalized/date'
 import { DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
-import { CalendarIcon, CheckCheck } from 'lucide-vue-next'
+import { CalendarIcon, CheckCheck, LoaderCircle, SendIcon } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -44,6 +44,7 @@ import { route } from 'ziggy-js'
 import axios from 'axios'
 import { toast } from 'vue-sonner'
 import { usePage } from '@inertiajs/vue3'
+import { Spinner } from '@/components/ui/spinner'
 const props=defineProps({
     documentTypes:{
         type: Array as PropType<Record<string, any>[]>,
@@ -507,7 +508,15 @@ function test(){
         </div>
         
         <div class="flex items-center justify-center mt-15 mb-10">
-            <Button type="submit" class="cursor-pointer">Submit</Button>
+             <Button
+                type="submit"
+                class="mt-4 cursor-pointer"
+                :disabled="form.processing"
+                data-test="reset-password-button"
+            >
+                <Spinner v-if="form.processing" />
+                <SendIcon v-else></SendIcon> Submit
+            </Button>
         </div>
         
     </Form>
