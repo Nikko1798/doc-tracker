@@ -54,7 +54,7 @@ const props=defineProps({
         'ncca_end_user','other_details', 
          'office_concerned', 'control_number', 
         'date_ready', 'date_released', 'time_released', 'remarks', 'actions']" 
-        :sortableColumns="['title', 'date_received' ]"
+        :sortableColumns="['title', 'date_received' , 'control_number']"
         :itemsPerPage="1"
         eventName="refresh-public-documents"
             :rowDblClick="handleRowDblClick"
