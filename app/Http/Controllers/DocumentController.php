@@ -76,5 +76,9 @@ class DocumentController extends Controller
     public function generateQr(Document $document){
         return $this->documentService->generateQr($document);
     }
+    public function deleteDocument(Document $document)
+    {
+        return $document->delete();
+    }
     
 }
