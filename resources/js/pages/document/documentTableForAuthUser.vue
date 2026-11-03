@@ -3,12 +3,15 @@
     import { nextTick, onMounted, PropType, ref, toRaw } from 'vue';
     import { route } from 'ziggy-js';
     import Button from '@/components/ui/button/Button.vue';
-    import { PlusIcon, PenBoxIcon, PenBox, QrCode } from 'lucide-vue-next';
+    import { PlusIcon, PenBoxIcon, PenBox, QrCode, Trash2 } from 'lucide-vue-next';
     import { Link } from '@inertiajs/vue3';
     import { usePage } from '@inertiajs/vue3';
     import axios from 'axios';
     import 'vue3-toastify/dist/index.css';
     import documentDrawerForm from './documentDrawerForm.vue';
+    import Swal from 'sweetalert2'
+    import { eventBus } from '@/composables/mitt'
+
     const props=defineProps({
         documentTypes:{
             type: Array as PropType<Record<string, any>[]>,
@@ -61,6 +64,29 @@
         isDrawerOpen.value = true
         console.log(toRaw(selectedRow.value))
     }
+    const deleteDocument = async (documentId: number) => {
+        Swal.fire({
+        title: "Are you sure you want to delete this document?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await axios.delete(route('document.delete-document', documentId));
+                    // Optionally, you can show a success message or refresh the table
+                    console.log('Document deleted successfully');
+                    eventBus.emit('refresh-all-documents');
+                } catch (error) {
+                    console.error('Error deleting document:', error);
+                }
+            }
+        });
+        
+    };
     
     
     
@@ -252,6 +278,7 @@
                 <div  class="flex items-center justify-center space-x-4" >
                     <Button @click="generateQr(rowData.id)" class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><QrCode/> Generate QR</Button>
                     <Button @click="handleRowDblClick(rowData)" " class="bg-blue-500 hover:bg-blue-800 hover:cursor-pointer"><PenBox></PenBox> Update</Button>
+                    <Button @click="deleteDocument(rowData.id)" class="bg-red-500 hover:bg-red-800 hover:cursor-pointer"><Trash2></Trash2> Delete</Button>
               
                 </div>
                 

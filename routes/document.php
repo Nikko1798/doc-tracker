@@ -7,6 +7,7 @@ Route::prefix('document')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/', [DocumentController::class, 'index'])->name('document.index');
         Route::post('/store', [DocumentController::class, 'store'])->name('document.store');
+        Route::delete('/delete-document/{document}', [DocumentController::class, 'deleteDocument'])->name('document.delete-document');
         Route::get('/fetch-all-documents', [DocumentController::class, 'fetchAllDocuments'])->name('document.fetch-all-documents');
        
         Route::get('/get-document/{document}', [DocumentController::class, 'getDocument'])->name('document.get-document');
